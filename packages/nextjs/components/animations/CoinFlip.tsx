@@ -43,9 +43,9 @@ export const CoinFlip = (props: any) => {
     scene.add(pointLightTop);
 
     THREE.ImageUtils.crossOrigin = "";
-    const texture_front = new THREE.TextureLoader().load("/coin-front.png");
-    const texture_back = new THREE.TextureLoader().load("/coin-back.png");
-    const texture_side = new THREE.TextureLoader().load("/coin-side.png");
+    const texture_front = new THREE.TextureLoader().load("/coin-front.svg");
+    const texture_back = new THREE.TextureLoader().load("/coin-back.svg");
+    const texture_side = new THREE.TextureLoader().load("/coin-side.svg");
 
     const material_front = new THREE.MeshStandardMaterial({
       map: texture_front,
