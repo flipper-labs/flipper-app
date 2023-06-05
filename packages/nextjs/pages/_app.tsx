@@ -32,6 +32,11 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
     setIsDarkTheme(isDarkMode);
   }, [isDarkMode]);
 
+  useEffect(() => {
+    const body = document.body;
+    body.setAttribute("data-theme", "scaffoldEthDark");
+  }, [])
+
   return (
     <WagmiConfig client={wagmiClient}>
       <NextNProgress />
