@@ -13,8 +13,26 @@ const deployerPrivateKey =
 // If not set, it uses ours Etherscan default API key.
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 
+const COMPILER_SETTINGS = {
+  optimizer: {
+    enabled: true,
+    runs: 1000000,
+  },
+  metadata: {
+    bytecodeHash: "none",
+  },
+};
+
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: {
+    compilers: [
+      { version: "0.8.17", settings: COMPILER_SETTINGS },
+      { version: "0.8.9", settings: COMPILER_SETTINGS },
+      { version: "0.4.24", settings: COMPILER_SETTINGS },
+      { version: "0.6.6", settings: COMPILER_SETTINGS },
+      { version: "0.8.9", settings: COMPILER_SETTINGS },
+    ],
+  },
   defaultNetwork: "localhost",
   namedAccounts: {
     deployer: {
