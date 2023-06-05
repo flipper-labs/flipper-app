@@ -2,13 +2,10 @@ import { useEffect } from "react";
 import { ActionButton } from "../misc/buttons/ActionButton";
 import { StatusButton } from "../misc/buttons/StatusButton";
 import { MatchPreviewUser } from "./MatchPreviewUser";
-import { useIsMounted } from "usehooks-ts";
 
 export interface MatchPreviewProps {}
 
 export const MatchPreview = () => {
-  const isMounted = useIsMounted();
-
   return (
     <div
       className={`box-border w-4/5 py-6 px-10 gap-18 
