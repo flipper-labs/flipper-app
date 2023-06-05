@@ -10,7 +10,6 @@ import { io } from "socket.io-client";
 import {socket} from "../services/socket"
 
 const Home: NextPage = () => {
-  const serverURL = "http://localhost:8002"
   const address = "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB"
   const [isConnected, setIsConnected] = useState(socket.connected);
   // const [socket, setSocket] = useState(null)
@@ -41,6 +40,26 @@ const Home: NextPage = () => {
     function onMatchCreate(match: any) {
       console.log('Match created!!!!! ', match);
     }
+
+    const handleAllEvents = (event:any, data:any) => {
+      console.log('Received event:', event);
+      console.log('Event data:', data);
+    };
+
+    socket.onAny(handleAllEvents);
+    socket.emit("match:create",
+    {
+      "creator": {
+          "wallet": "0xff914CAeCc4B7e8113e4CA44D5735293205d01b9_hadzija",
+          "nfts": [
+              {
+                  "contract": "0xcontract2",
+                  "tokenId": 20
+              }
+          ]
+      },
+      "gamemode": "Winner Takes All"
+  })
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
