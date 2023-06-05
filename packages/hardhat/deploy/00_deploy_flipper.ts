@@ -20,12 +20,10 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     You can run the `yarn account` command to check your balance in every network.
   */
   const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
-
+  const { deploy, execute } = hre.deployments;
   const pointOneLink = BigNumber.from("100000000000000000");
   const gasLimit = 300_000;
   const pointZeroZeroThreeLink = BigNumber.from("3000000000000000");
-
   const VRFCoordinatorV2Mock = await deploy("VRFCoordinatorV2Mock", {
     from: deployer,
     // Contract constructor arguments
@@ -35,31 +33,33 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
-
   const mockV3Aggregator = await deploy("MockV3Aggregator", {
     from: deployer,
     args: [18, pointZeroZeroThreeLink],
     log: true,
     autoMine: true,
   });
-
   const linkToken = await deploy("LinkToken", {
     from: deployer,
     args: [],
     log: true,
     autoMine: true,
   });
-
   const VRFV2Wrapper = await deploy("VRFV2Wrapper", {
     from: deployer,
     args: [linkToken.address, mockV3Aggregator.address, VRFCoordinatorV2Mock.address],
     log: true,
     autoMine: true,
   });
-
-  await deploy("Flipper", {
+  const flipper = await deploy("Flipper", {
     from: deployer,
-    args: [linkToken.address, VRFV2Wrapper.address, BigNumber.from(gasLimit)],
+    args: [linkToken.address, VRFV2Wrapper.address, BigNumber.from(gasLimit), BigNumber.from(1800)],
+    log: true,
+    autoMine: true,
+  });
+  const erc721collection = await deploy("MockERC721", {
+    from: deployer,
+    args: [],
     log: true,
     autoMine: true,
   });
@@ -69,4 +69,4 @@ export default deployFlipper;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployFlipper.tags = ["Flipper"];
+deployFlipper.tags = ["Flipper-official"];

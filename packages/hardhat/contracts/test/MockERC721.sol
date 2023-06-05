@@ -18,4 +18,10 @@ contract MockERC721 is ERC721, ERC721Burnable, Ownable {
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
     }
+
+    function mint() public {
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(msg.sender, tokenId);
+    }
 }

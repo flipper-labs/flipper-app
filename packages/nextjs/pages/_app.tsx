@@ -23,6 +23,10 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
+    document.body.setAttribute("data-theme", "scaffoldEthDark");
+  }, []);
+
+  useEffect(() => {
     if (price > 0) {
       setNativeCurrencyPrice(price);
     }

@@ -7,9 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@chainlink/contracts/src/v0.8/VRFV2WrapperConsumerBase.sol";
 
 contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
-    event MatchCreated(string indexed id, address creator, uint256 timestamp);
-    event MatchCompleted(string indexed id, address winner, uint256 timestamp);
-    event MatchAbandoned(string indexed id, uint256 timestamp);
+    event MatchCreated(address indexed player1, address indexed player2, string id);
+    event MatchCompleted(address indexed player1, address indexed player2, string id);
 
     struct Match {
         uint256 timestamp;
@@ -49,8 +48,6 @@ contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
     /**
      * @dev Initializes a match, locks users' tokens and requests randomness from Chainlink's VRF,
      * which will be used for determining a winner.
-     *
-     * Emits a {MatchCreated} event.
      */
     function createMatch(string calldata matchId, Match memory _match) 
         external
@@ -74,7 +71,7 @@ contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
         newMatch.winner = address(0);
         newMatch.gamemode = _match.gamemode;
 
-        emit MatchCreated(matchId, newMatch.player1, block.timestamp);
+        emit MatchCreated(_match.player1, _match.player2, matchId);
     }
 
     /**
@@ -137,9 +134,8 @@ contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
 
         _match.isSettled = true;
 
-        emit MatchCompleted(matchId, _match.winner, block.timestamp);
+        emit MatchCompleted(_match.player1, _match.player2, matchId);
     }
-
 
     /**
      * @dev Allow users to claim their tokens after the match start window has passed.
@@ -157,10 +153,9 @@ contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
         }else if(msg.sender == _match.player2) {
             _transferNFTs(address(this), _match.player2, _match.player2Stake);
         }
-              
+
         if(!_match.isSettled){
             _match.isSettled = true;
-            emit MatchAbandoned(matchId, block.timestamp);
         }
     }
 
