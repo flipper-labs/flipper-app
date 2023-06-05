@@ -5,7 +5,7 @@ import { MatchPreviewUser } from "./MatchPreviewUser";
 
 export interface MatchPreviewProps {}
 
-export const MatchPreview = () => {
+export const MatchPreview = (props: any) => {
   return (
     <div
       className={`box-border w-4/5 py-6 px-10 gap-18 
@@ -13,9 +13,9 @@ export const MatchPreview = () => {
       border-[1px] border-solid rounded-lg border-gray-400
       `}
     >
-      <MatchPreviewUser address="0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB" stake={3} />
+      <MatchPreviewUser address={props.match_data.player1.wallet} stake={props.match_data.player1.nfts.length} />
       <div className="text-lg">VS</div>
-      <MatchPreviewUser address="0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015" stake={2} />
+      <MatchPreviewUser address={props.match_data.player2.wallet} stake={props.match_data.player2.nfts.length} />
       <StatusButton status="LIVE" color="#F050F2" />
       <ActionButton action="Spectate" color="#46D05C" />
     </div>

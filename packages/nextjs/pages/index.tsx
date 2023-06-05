@@ -10,60 +10,30 @@ import { io } from "socket.io-client";
 import {socket} from "../services/socket"
 
 const Home: NextPage = () => {
-  const address = "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB"
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  // const [socket, setSocket] = useState(null)
-  console.log("Socket: ", socket)
-  
   const [matches, setMatches] = useState([])
-
-  // useEffect(() => {
-  //   console.log("Socket connected: ", socket.connected)
-  //   socket.on('match:create', (match) => {
-  //     console.log('Match created!!!!! ', match);
-  //     // matches.push(match)
-  //   });
-  //   // fetch(serverURL+"/matches/"+address).then(async result => {
-  //   //   console.log("Fetch result: ", await result.json())
-  //   // })
-  // }, [])
 
   useEffect(() => {
     function onConnect() {
-      setIsConnected(true);
+      console.log("Matches overview: socket connected!")
     }
 
     function onDisconnect() {
-      setIsConnected(false);
+      console.log("Matches overview: socket disconnected!")
     }
 
     function onMatchCreate(match: any) {
-      console.log('Match created!!!!! ', match);
+      setMatches(matches => [...matches, match]);
     }
 
-    const handleAllEvents = (event:any, data:any) => {
-      console.log('Received event:', event);
-      console.log('Event data:', data);
-    };
-
-    socket.onAny(handleAllEvents);
-    socket.emit("match:create",
-    {
-      "creator": {
-          "wallet": "0xff914CAeCc4B7e8113e4CA44D5735293205d01b9_hadzija",
-          "nfts": [
-              {
-                  "contract": "0xcontract2",
-                  "tokenId": 20
-              }
-          ]
-      },
-      "gamemode": "Winner Takes All"
-  })
+    function onActiveMatches(matches: any) {
+      setMatches(matches);
+    }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('match:create', onMatchCreate)
+    socket.on('match:all_active', onActiveMatches)
+    socket.emit('match:all_active', "")
 
     return () => {
       socket.off('connect', onConnect);
@@ -72,20 +42,19 @@ const Home: NextPage = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log("Is connected state changed: ", isConnected)
-  // }, [isConnected])
   return (
     <>
       <Head>
-        <title>Scaffold-ETH 2 App</title>
-        <meta name="description" content="Created with 🏗 scaffold-eth-2" />
+        <title>Flipper</title>
+        <meta name="description" content="Gamble your NFTs" />
       </Head>
 
       <div className="flex items-center flex-col pt-10 gap-4 w-full">
         <Cover />
         <MatchActions />
-        <MatchPreview />
+        {matches.map((item, index) => (
+          <MatchPreview key={index} match_data={item}/>
+        ))}
       </div>
     </>
   );
