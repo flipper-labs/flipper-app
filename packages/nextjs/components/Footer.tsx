@@ -25,7 +25,7 @@ export const Footer = () => {
             )}
             {getTargetNetwork().id === hardhat.id && <Faucet />}
           </div>
-          <SwitchTheme className="pointer-events-auto" />
+          {/* <SwitchTheme className="pointer-events-auto" /> */}
         </div>
       </div>
       <div className="w-full">
