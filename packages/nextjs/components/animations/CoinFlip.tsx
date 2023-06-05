@@ -17,7 +17,7 @@ export const CoinFlip = (props: any) => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
     renderer.setClearColor(0x000000, 0);
     if (canvasRef.current) {
         canvasRef.current.appendChild(renderer.domElement);
@@ -65,15 +65,15 @@ export const CoinFlip = (props: any) => {
       roughness: 0.3,
     });
 
-    const geometry = new THREE.CylinderGeometry(1, 1, 0.2, 40);
+    const geometry = new THREE.CylinderGeometry(1.5, 1.5, 0.2, 40);
     const materials = [material_side, material_front, material_back];
 
     const mesh = new THREE.Mesh(geometry, materials);
 
     scene.add(mesh);
-    camera.position.set(0, 0, 7);
+    camera.position.set(0, 2, 7);
 
-    mesh.rotation.x = 1;
+    mesh.rotation.x = 0.7;
     mesh.rotation.y = 1.5;
 
     // Render the scene
@@ -126,5 +126,5 @@ export const CoinFlip = (props: any) => {
     };
   }, []);
 
-  return <div ref={canvasRef} />;
+  return <div className="items-center" ref={canvasRef} />;
 };

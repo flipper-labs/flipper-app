@@ -52,3 +52,32 @@ p {
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
+
+.scrollable-div {
+  height: 200px;
+  overflow: auto;
+  flex-direction: column-reverse;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.chat-head-color {
+  background-color: #404040;
+}
+
+.chat-body-color {
+  background-color: #1A1A1A;
+}
+
+.chat-button-color {
+  background-color: #650BBF;
+}
