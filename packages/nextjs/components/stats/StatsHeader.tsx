@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import LossIcon from "./../../public/svgs/loss.svg";
 import WinIcon from "./../../public/svgs/win.svg";
 import { Match } from "~~/models/match";
+import { shortenAddress } from "~~/utils/flipper";
 
 export interface StatsHeaderProps {
   address: string;
@@ -33,12 +34,13 @@ export const StatsHeader = ({ address, matches }: StatsHeaderProps) => {
   }, []);
 
   const calculatePercentage = (num: number, total: number): string => {
+    if (total == 0) return "0";
     return (num / total).toFixed(0);
   };
 
   return (
     <div className="flex flex-col gap-8 justify-center items-center">
-      <div className="text-3xl font-bold">{address?.slice(0, 5) + "..." + address?.slice(-4)}</div>
+      <div className="text-3xl font-bold">{shortenAddress(address)}</div>
       <div className="flex flex-row gap-[15rem] justify-between items-center">
         <div className="flex flex-row justify-center items-center gap-3">
           <WinIcon stroke="white" width={64} height={64} />

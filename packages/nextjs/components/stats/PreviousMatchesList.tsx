@@ -11,7 +11,7 @@ export const PreviousMatchesList = ({ address, matches }: PreviousMatchesListPro
     <div className="flex flex-col w-full justify-center items-center">
       {matches &&
         matches.map(match => {
-          return <PreviousMatchPreview match={match} player={address} />;
+          return <PreviousMatchPreview match={match} player={address} key={match.id} />;
         })}
     </div>
   );

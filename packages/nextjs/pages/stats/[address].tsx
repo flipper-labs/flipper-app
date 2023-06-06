@@ -144,7 +144,12 @@ const Stats: NextPage = () => {
 
       <div className="flex flex-col pt-10 gap-4 w-full items-center justify-center">
         <StatsHeader address={address ? (address as string) : ""} matches={matches} />
-        <PreviousMatchesList address={address ? (address as string) : ""} matches={matches} />
+        <button onClick={write}>Create match</button>
+        {matches.length > 0 ? (
+          <PreviousMatchesList address={address ? (address as string) : ""} matches={matches} />
+        ) : (
+          "There are no matches to be displayed."
+        )}
       </div>
     </>
   );
