@@ -1,17 +1,58 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { NextPage } from "next";
-import robbotNFT from "~~/public/nftImages/robbotNFT.png"
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { NFTGrid } from "~~/components/NFTGrid";
+import imageUrl from "~~/public/nftImages/robbotNFT.png"
 
 const CreateMatch: NextPage = () => {
-
+  const nfts: Array<any> = [
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    },
+    {
+        imageUrl: imageUrl,
+        selected: false,
+    }
+  ]
   return (
     <>
       <div className="flex justify-center items-center flex-col pt-10 gap-4 w-full">
         <div className="text-header">Pick the NFTs</div>
-        <NFTGrid></NFTGrid>
+        <NFTGrid nfts={nfts}></NFTGrid>
         <div className="mt-3">
           <Link href="/create_match/match_lobby">
             <ActionButton
