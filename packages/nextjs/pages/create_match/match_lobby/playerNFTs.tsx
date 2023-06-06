@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NFTGrid } from "~~/components/NFTGrid";
 const axios = require('axios');
 
@@ -94,6 +94,7 @@ export const PlayerNFTs = ({ address, coin_image, icon_align }: { address: strin
             selected: false,
         }
     ]
+    const [myNfts, setMyNfts]: Array<any> = useState(nfts)
 
     return (
         <div className="flex flex-col pt-3 justify-center items-center">
@@ -103,7 +104,7 @@ export const PlayerNFTs = ({ address, coin_image, icon_align }: { address: strin
                 </div>
             </div>
             <div>{displayAddress}</div>
-            <NFTGrid nfts={nfts}></NFTGrid>
+            <NFTGrid nfts={nfts} myNfts={myNfts} setMyNfts={setMyNfts}></NFTGrid>
         </div>
     );
 };
