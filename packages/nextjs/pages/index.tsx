@@ -78,7 +78,7 @@ const Home: NextPage = () => {
       socket.off("match:create", onMatchCreate);
       socket.off("match:join", onMatchJoin);
     };
-  }, [address]);
+  }, [address, router]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,7 +135,7 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
-        <Cover />
+        <Cover address={address} />
         <MatchActions
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
@@ -148,8 +148,8 @@ const Home: NextPage = () => {
           className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full"
           style={{ height: "45vh" }}
         >
-          {matches.map((match, index) => (
-            <MatchPreview key={index} match={match} />
+          {matches.map((item, index) => (
+            <MatchPreview key={index} match={item} />
           ))}
         </div>
       </div>

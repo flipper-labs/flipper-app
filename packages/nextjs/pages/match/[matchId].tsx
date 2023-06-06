@@ -195,7 +195,7 @@ const MatchLobby = () => {
       </div>
       <div style={{ height: "30vh" }} className="flex h-full w-full px-10 py-5 h-100 gap-10">
         <div className="w-full">
-          <Chat />
+          <Chat address={address} matchID={matchId} />
         </div>
       </div>
     </div>
