@@ -49,10 +49,10 @@ const Home: NextPage = () => {
         <meta name="description" content="Gamble your NFTs" />
       </Head>
 
-      <div className="flex items-center flex-col pt-10 gap-4 w-full">
+      <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
         <Cover />
         <MatchActions />
-        <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between"}} className="scrollable-div hide-scroll">
+        <div className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full" style={{height: '45vh'}}>
           {matches.map((item, index) => (
             <MatchPreview key={index} match_data={item}/>
           ))}
@@ -60,6 +60,6 @@ const Home: NextPage = () => {
       </div>
     </>
   );
-};
+}; 
 
 export default Home;

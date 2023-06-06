@@ -59,7 +59,7 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
 
   await deploy("Flipper", {
     from: deployer,
-    args: [linkToken.address, VRFV2Wrapper.address, BigNumber.from(gasLimit)],
+    args: [linkToken.address, VRFV2Wrapper.address, BigNumber.from(gasLimit), BigNumber.from(1000)],
     log: true,
     autoMine: true,
   });
