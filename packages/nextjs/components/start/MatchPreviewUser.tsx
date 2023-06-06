@@ -6,6 +6,7 @@ export const MatchPreviewUser = ({ address, stake }: { address: string; stake: n
   const { address: currentUser } = useAccount();
 
   const jsNumberForAddress = (address: string): number => {
+    console.log("ADDRESS: " + address)
     const addr = address.slice(2, 10);
     const seed = parseInt(addr, 16);
 

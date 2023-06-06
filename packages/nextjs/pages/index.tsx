@@ -8,8 +8,12 @@ import { MatchPreview } from "~~/components/start/MatchPreview";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import {socket, httpServerURL} from "../services/socket"
+import { useAccount } from "wagmi";
+import { useRouter } from 'next/router';
 
 const Home: NextPage = () => {
+  const account = useAccount();
+  const router = useRouter();
   const [matches, setMatches] = useState([])
   const [nameFilter, setNameFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState( [
@@ -59,16 +63,25 @@ const Home: NextPage = () => {
       setMatches(matches => [...matches, match]);
     }
 
+    function onMatchJoin(match: any) {
+      if (match.player2.wallet === account?.address) {
+        console.log("Joining match with id: " + match.id)
+        router.push('/create_match/match_lobby');
+      }
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('match:create', onMatchCreate)
+    socket.on('match:join', onMatchJoin)
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('match:create', onMatchCreate)
+      socket.off('match:join', onMatchJoin)
     };
-  }, []);
+  }, [account]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,7 +144,7 @@ const Home: NextPage = () => {
                       nameFilter={nameFilter} setNameFilter={setNameFilter}/>
         <div className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full" style={{height: '45vh'}}>
           {matches.map((item, index) => (
-            <MatchPreview key={index} match_data={item}/>
+            <MatchPreview key={index} match_data={item} account={account}/>
           ))}
         </div>
       </div>
