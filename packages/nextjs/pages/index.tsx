@@ -66,7 +66,10 @@ const Home: NextPage = () => {
     function onMatchJoin(match: any) {
       if (match.player2.wallet === account?.address) {
         console.log("Joining match with id: " + match.id)
-        router.push('/create_match/match_lobby');
+        router.push({
+          pathname: "/create_match/match_lobby/",
+          query: {matchID: match.id}
+        });
       }
     }
 
@@ -81,7 +84,7 @@ const Home: NextPage = () => {
       socket.off('match:create', onMatchCreate)
       socket.off('match:join', onMatchJoin)
     };
-  }, [account]);
+  }, [account, router]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,7 +141,7 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
-        <Cover />
+        <Cover address={account.address} />
         <MatchActions statusFilter={statusFilter} setStatusFilter={setStatusFilter} 
                       nftNumberFilter={nftNumberFilter} setNftNumberFilter={setNftNumberFilter}
                       nameFilter={nameFilter} setNameFilter={setNameFilter}/>

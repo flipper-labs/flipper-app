@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ActionButton } from "../misc/buttons/ActionButton";
 import Link from "next/link";
 
-export const Cover = () => {
+export const Cover = (props: any) => {
   return (
     <div className="flex flex-row gap-10 w-4/5 justify-between">
       <div className="bg-red-400 w-[70%]">
@@ -15,6 +15,7 @@ export const Cover = () => {
           alt="cover"
         />
       </div>
+      { props.address &&
       <div className="flex flex-col justify-around">
         <Link href="/create_match">
           <ActionButton
@@ -35,6 +36,7 @@ export const Cover = () => {
           paddingY={1}
         />
       </div>
+      }
     </div>
   );
 };
