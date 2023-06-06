@@ -52,3 +52,24 @@ export const getNFTImage = async (contract: Contract, tokenId: BigNumber): Promi
   const metadata = await contract?.tokenURI(tokenId);
   return await fetchFromIpfs(metadata.substring(7));
 };
+
+export const getUserNFTs = async (contract: Contract, user: string): Promise<NFT[]> => {
+  if (!contract) {
+    return [];
+  }
+
+  const tokenIds = await contract?.getOwnerTokens(user);
+  const nfts = [];
+  for (let i = 0; i < tokenIds.length; i++) {
+    const image = await getNFTImage(contract, tokenIds[i]);
+
+    nfts.push({
+      contract: contract.address,
+      tokenId: tokenIds[i],
+      image: image,
+      selected: false,
+    });
+  }
+
+  return nfts;
+};

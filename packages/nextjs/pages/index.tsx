@@ -1,98 +1,92 @@
+import { useEffect, useState } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/router";
+import { httpServerURL, socket } from "../services/socket";
 import type { NextPage } from "next";
+import { useAccount } from "wagmi";
 import { Cover } from "~~/components/start/Cover";
 import { MatchActions } from "~~/components/start/MatchActions";
 import { MatchPreview } from "~~/components/start/MatchPreview";
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import {socket, httpServerURL} from "../services/socket"
-import { useAccount } from "wagmi";
-import { useRouter } from 'next/router';
 
 const Home: NextPage = () => {
-  const account = useAccount();
+  const { address } = useAccount();
   const router = useRouter();
-  const [matches, setMatches] = useState([])
-  const [nameFilter, setNameFilter] = useState("")
-  const [statusFilter, setStatusFilter] = useState( [
+  const [matches, setMatches] = useState([]);
+  const [nameFilter, setNameFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState([
     {
-      "name": "None",
-      "checked": true
+      name: "None",
+      checked: true,
     },
     {
-      "name": "Ongoing",
-      "checked": false
+      name: "Ongoing",
+      checked: false,
     },
     {
-      "name": "Created",
-      "checked": false
-    }
-  ] )
+      name: "Created",
+      checked: false,
+    },
+  ]);
 
-  const [nftNumberFilter, setNftNumberFilter] = useState( [
+  const [nftNumberFilter, setNftNumberFilter] = useState([
     {
-      "name": "None",
-      "checked": true
+      name: "None",
+      checked: true,
     },
     {
-      "name": "0-2",
-      "checked": false
+      name: "0-2",
+      checked: false,
     },
     {
-      "name": "3-5",
-      "checked": false
+      name: "3-5",
+      checked: false,
     },
     {
-      "name": "6+",
-      "checked": false
-    }
-  ] )
+      name: "6+",
+      checked: false,
+    },
+  ]);
 
   useEffect(() => {
     function onConnect() {
-      console.log("Matches overview: socket connected!")
+      console.log("Matches overview: socket connected!");
     }
 
     function onDisconnect() {
-      console.log("Matches overview: socket disconnected!")
+      console.log("Matches overview: socket disconnected!");
     }
 
     function onMatchCreate(match: any) {
-      setMatches(matches => [...matches, match]);
+      setMatches([...matches, match]);
     }
 
     function onMatchJoin(match: any) {
-      if (match.player2.wallet === account?.address) {
-        console.log("Joining match with id: " + match.id)
-        router.push({
-          pathname: "/create_match/match_lobby/",
-          query: {matchID: match.id}
-        });
+      if (match.player2.wallet === address) {
+        console.log("Joining match with id: " + match.id);
+        router.push(`match/${match.id}`);
       }
     }
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('match:create', onMatchCreate)
-    socket.on('match:join', onMatchJoin)
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("match:create", onMatchCreate);
+    socket.on("match:join", onMatchJoin);
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('match:create', onMatchCreate)
-      socket.off('match:join', onMatchJoin)
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("match:create", onMatchCreate);
+      socket.off("match:join", onMatchJoin);
     };
-  }, [account, router]);
+  }, [address, router]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         var queryData = {
-          "player": nameFilter,
-          "status": [],
-          "nftNumber": []
+          player: nameFilter,
+          status: [],
+          nftNumber: [],
         };
 
         for (let i = 0; i < statusFilter.length; i++) {
@@ -100,9 +94,9 @@ const Home: NextPage = () => {
             continue;
           }
           queryData.status.push({
-            "value": statusFilter[i].name,
-            "checked": statusFilter[i].checked
-          })
+            value: statusFilter[i].name,
+            checked: statusFilter[i].checked,
+          });
         }
 
         for (let i = 0; i < nftNumberFilter.length; i++) {
@@ -110,15 +104,15 @@ const Home: NextPage = () => {
             continue;
           }
           queryData.nftNumber.push({
-            "value": nftNumberFilter[i].name,
-            "checked": nftNumberFilter[i].checked
-          })
+            value: nftNumberFilter[i].name,
+            checked: nftNumberFilter[i].checked,
+          });
         }
 
         const requestOptions = {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(queryData),
         };
@@ -126,7 +120,7 @@ const Home: NextPage = () => {
         const jsonData = await response.json();
         setMatches(jsonData.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -141,18 +135,26 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
-        <Cover address={account.address} />
-        <MatchActions statusFilter={statusFilter} setStatusFilter={setStatusFilter} 
-                      nftNumberFilter={nftNumberFilter} setNftNumberFilter={setNftNumberFilter}
-                      nameFilter={nameFilter} setNameFilter={setNameFilter}/>
-        <div className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full" style={{height: '45vh'}}>
+        <Cover address={address} />
+        <MatchActions
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          nftNumberFilter={nftNumberFilter}
+          setNftNumberFilter={setNftNumberFilter}
+          nameFilter={nameFilter}
+          setNameFilter={setNameFilter}
+        />
+        <div
+          className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full"
+          style={{ height: "45vh" }}
+        >
           {matches.map((item, index) => (
-            <MatchPreview key={index} match_data={item} account={account}/>
+            <MatchPreview key={index} match={item} />
           ))}
         </div>
       </div>
     </>
   );
-}; 
+};
 
 export default Home;

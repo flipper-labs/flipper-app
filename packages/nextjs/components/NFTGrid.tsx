@@ -1,35 +1,35 @@
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import robbotNFT from "~~/public/nftImages/robbotNFT.png"
+import { useAccount } from "wagmi";
+import { NFT } from "~~/models/nfts";
 
-interface NFTGridInterface{
-    nfts: Array<any>
-    setNfts: any
+interface NFTGridProps {
+  player: string;
+  nfts: NFT[];
+  setNfts: any;
+  isLockedIn: boolean;
 }
 
-export const NFTGrid = ({
-    nfts,
-    setNfts
-}: NFTGridInterface) => {
-    // const [myNfts, setMyNfts]: Array<any> = useState(nfts)
-    const handleClick = (i: any) => {
-        console.log(i)
-        const newNft = [...nfts];
-        newNft[i].selected = !newNft[i].selected
-        setNfts(newNft)
+export const NFTGrid = ({ player, nfts, setNfts, isLockedIn }: NFTGridProps) => {
+  const { address } = useAccount();
 
-        console.log("nft: ", newNft[i])
+  const handleClick = (i: any) => {
+    if (address !== player || isLockedIn) {
+      return;
     }
 
-    return (
-        <div className="scrollable-div hide-scroll h-full grid grid-cols-4 gap-4" style={{height:"40vh"}}>
-            { nfts.map(
-            (nft: any, i: any) => <div onClick={() => handleClick(i)} className="m-4" key={i}>
-                    <div style={{border: nft.selected ? "5px purple solid" : "none"}}>
-                        <img src={nft.imageUrl} alt="image loading"></img>
-                    </div>
-                </div>
-            )}
+    const newNft = [...nfts];
+    newNft[i].selected = !newNft[i].selected;
+    setNfts(newNft);
+  };
+
+  return (
+    <div className="scrollable-div hide-scroll h-full grid grid-cols-4 gap-4" style={{ height: "40vh" }}>
+      {nfts.map((nft: any, i: any) => (
+        <div onClick={() => handleClick(i)} className="m-4" key={i}>
+          <div className="w-20" style={{ border: nft.selected ? "5px purple solid" : "none" }}>
+            <img src={nft.image} alt="image loading"></img>
+          </div>
         </div>
-    )
-}
+      ))}
+    </div>
+  );
+};

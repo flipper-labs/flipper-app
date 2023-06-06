@@ -1,60 +1,46 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { socket } from "../../services/socket";
+import { useRouter } from "next/router";
+import { socket } from "../../../services/socket";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTGrid } from "~~/components/NFTGrid";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
-import { NFT, getNFTImage } from "~~/models/nfts";
-import { useRouter } from 'next/router';
+import { NFT, getUserNFTs } from "~~/models/nfts";
 
 const CreateMatch: NextPage = () => {
-  const { address } = useAccount();
   const router = useRouter();
+  const { address } = useAccount();
+  const [matchId, setMatchId] = useState<string>("");
   const [nfts, setNfts] = useState<NFT[]>([]);
   const { data: nftContract } = useScaffoldContract({
     contractName: "MockERC721",
   });
 
+  function onMatchCreate(match: any) {
+    setMatchId(match.id);
+  }
+
   useEffect(() => {
     (async () => {
-      if (nftContract) {
-        const tokenIds = await nftContract?.getOwnerTokens(address);
-        const newNft = [];
-        for (let i = 0; i < tokenIds.length; i++) {
-          const image = await getNFTImage(nftContract, tokenIds[i]);
+      if (nftContract && address) {
+        const nfts = await getUserNFTs(nftContract, address);
+        // TODO: Player's NFTs are not dispalyed immediatelly
 
-          newNft.push({
-            contract: nftContract.address,
-            tokenId: tokenIds[i],
-            image: image,
-            selected: false,
-          });
-        }
-        setNfts(newNft);
+        setNfts(nfts);
       }
     })();
+
+    socket.on("match:create", onMatchCreate);
+
+    return () => {
+      socket.off("match:create", onMatchCreate);
+    };
   }, [address]);
 
   useEffect(() => {
-    function onMatchCreate(match: any) {
-      if (match.player1.wallet === address) {
-        console.log("Created match with id: " + match.id)
-        router.push({
-          pathname: "/create_match/match_lobby/",
-          query: {matchID: match.id}
-        });
-      }
-    }
-
-    socket.on('match:create', onMatchCreate)
-
-    return () => {
-      socket.off('match:create', onMatchCreate)
-    };
-  }, [address, router])
+    matchId && router.push(`/match/${matchId}`);
+  }, [matchId]);
 
   const handleClick = () => {
     const mynfts = [];
@@ -77,7 +63,7 @@ const CreateMatch: NextPage = () => {
     <>
       <div className="flex justify-center items-center flex-col pt-10 gap-4 w-full">
         <div className="text-header">Pick the NFTs</div>
-        <NFTGrid nfts={nfts} setNfts={setNfts}></NFTGrid>
+        <NFTGrid nfts={nfts} setNfts={setNfts} player={address ? address : ""} isLockedIn={false} />
         <div className="mt-3">
           <ActionButton
             action="Create Match"
