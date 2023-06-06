@@ -27,6 +27,7 @@ export const MatchPreview = (props: any) => {
   if (props.match_data.player2.wallet == "") {
     action_button = <ActionButton action="Join" color="#46D05C" onClick={match_join} />
   }
+  action_button = props.account.address && action_button
 
   return (
     <div

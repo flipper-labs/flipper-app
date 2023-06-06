@@ -1,10 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { io } from "socket.io-client";
+import {socket} from "../services/socket"
+import { shortenAddress } from '~~/utils/flipper';
 
-export const Chat = () => {
+export const Chat = (props: any) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
   const inputRef = useRef<any>(null);
+
+  useEffect(() => {
+    function onMatchChat(message) {
+      console.log("Received message")
+      setMessages([...messages, shortenAddress(message.player.wallet) + ": " + message.message]);
+    }
+
+    socket.on('match:chat', onMatchChat)
+
+    return () => {
+      socket.off('match:chat', onMatchChat);
+    };
+  }, [messages]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -18,7 +34,13 @@ export const Chat = () => {
 
   const handleSendMessage = () => {
     if (inputValue) {
-      setMessages([...messages, inputValue]);
+      socket.emit("match:chat", {
+        matchID: props.matchID,
+        message: inputValue,
+        player: {
+          wallet: props.address
+        }
+      });
       setInputValue('');
     }
   };

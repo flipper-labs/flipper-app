@@ -8,9 +8,11 @@ import { NFTGrid } from "~~/components/NFTGrid";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { NFT, getNFTImage } from "~~/models/nfts";
+import { useRouter } from 'next/router';
 
 const CreateMatch: NextPage = () => {
   const { address } = useAccount();
+  const router = useRouter();
   const [nfts, setNfts] = useState<NFT[]>([]);
   const { data: nftContract } = useScaffoldContract({
     contractName: "MockERC721",
@@ -36,6 +38,24 @@ const CreateMatch: NextPage = () => {
     })();
   }, [address]);
 
+  useEffect(() => {
+    function onMatchCreate(match: any) {
+      if (match.player1.wallet === address) {
+        console.log("Created match with id: " + match.id)
+        router.push({
+          pathname: "/create_match/match_lobby/",
+          query: {matchID: match.id}
+        });
+      }
+    }
+
+    socket.on('match:create', onMatchCreate)
+
+    return () => {
+      socket.off('match:create', onMatchCreate)
+    };
+  }, [address, router])
+
   const handleClick = () => {
     const mynfts = [];
     for (let i = 0; i < nfts.length; i++) {
@@ -59,17 +79,15 @@ const CreateMatch: NextPage = () => {
         <div className="text-header">Pick the NFTs</div>
         <NFTGrid nfts={nfts} setNfts={setNfts}></NFTGrid>
         <div className="mt-3">
-          <Link href="/create_match/match_lobby">
-            <ActionButton
-              action="Create Match"
-              color="white"
-              iconToRight={false}
-              background="#F050F2"
-              paddingX={3}
-              paddingY={1}
-              onClick={handleClick}
-            />
-          </Link>
+          <ActionButton
+            action="Create Match"
+            color="white"
+            iconToRight={false}
+            background="#F050F2"
+            paddingX={3}
+            paddingY={1}
+            onClick={handleClick}
+          />
         </div>
       </div>
     </>

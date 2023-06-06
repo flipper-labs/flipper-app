@@ -1,7 +1,16 @@
 import { Chat } from "~~/components/Chat"
 import {PlayerNFTs} from "./playerNFTs"
+import { useRouter } from 'next/router';
+import { useAccount } from "wagmi";
 
 export const MatchLobby = () => {
+    const router = useRouter();
+    const account = useAccount()
+
+    // Access the query parameters or URL path parameters
+    const matchID = router.query.matchID;
+    console.log("Query match id: " + matchID)
+
     const player1 = "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB"
     const player2 = "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB"
 
@@ -17,7 +26,7 @@ export const MatchLobby = () => {
             </div>
             <div style={{height: "30vh"}} className="flex h-full w-full px-10 py-5 h-100 gap-10">
                 <div className="w-full">
-                    <Chat/>
+                    <Chat address={account.address} matchID={matchID} />
                 </div>
             </div>
         </div>
