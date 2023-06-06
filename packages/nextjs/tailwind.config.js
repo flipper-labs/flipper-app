@@ -94,7 +94,8 @@ module.exports = {
         "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
       },
       fontSize: {
-        header: "30px"
+        header: "30px",
+        big: "50px"
       },
       keyframes: {
         grow: {
