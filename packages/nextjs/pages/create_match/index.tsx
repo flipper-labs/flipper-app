@@ -26,12 +26,14 @@ const CreateMatch: NextPage = () => {
         const newNft = [];
         for(let i = 0; i < tokenIds.length; i ++){
           const metadata = await nft?.tokenURI(tokenIds[i]);
+          console.log("Metadata: ", metadata)
           const image = await fetchFromIpfs(metadata.substring(7));
           console.log("Image url: ", image)
           
           newNft.push({
             imageUrl: image,
-            selected: false
+            selected: false,
+            tokenId: tokenIds[i]
           }) 
         }
         setNfts(newNft)
@@ -41,15 +43,21 @@ const CreateMatch: NextPage = () => {
     })()
   }, [address])
   const handleClick = () => {
+    // const mynfts = nfts.filter((n: any) => n.selected)
+    const mynfts = []
+    for(let i = 0; i < nfts.length; i ++){
+      if(nfts[i].selected){
+        mynfts.push({
+          contract: nft?.address,
+          tokenId: nfts[i].tokenId
+        })
+      }
+    }
+
     socket.emit("match:create", {
       "creator": {
           "wallet": {address},
-          "nfts": [
-              {
-                  "contract": "0xcontract2",
-                  "tokenId": 20
-              }
-          ]
+          "nfts": mynfts
       },
       "gamemode": "Winner Takes All"
     })
