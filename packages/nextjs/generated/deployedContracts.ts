@@ -1782,7 +1782,7 @@ const contracts = {
           ],
         },
         Flipper: {
-          address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+          address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
           abi: [
             {
               inputs: [
@@ -1974,6 +1974,42 @@ const contracts = {
               name: "createMatch",
               outputs: [],
               stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "player",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "matchId",
+                  type: "string",
+                },
+              ],
+              name: "getPlayerStake",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "address",
+                      name: "contractAddress",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct Flipper.NFT[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+              ],
+              stateMutability: "view",
               type: "function",
             },
             {
@@ -2209,7 +2245,7 @@ const contracts = {
           ],
         },
         MockERC721: {
-          address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+          address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
           abi: [
             {
               inputs: [],
@@ -2540,6 +2576,19 @@ const contracts = {
                 },
               ],
               name: "setApprovalForAll",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "baseURI",
+                  type: "string",
+                },
+              ],
+              name: "setBaseURI",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",

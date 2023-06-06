@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { BigNumber, ethers, utils } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { localhost } from "wagmi/chains";
 import { useScaffoldContract, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-import { matchFromLog } from "~~/models/match";
+import { Match, matchFromLog } from "~~/models/match";
 import { mapAsyncParallel } from "~~/utils/flipper/arrays";
+import { getLocalProvider } from "~~/utils/scaffold-eth";
+
+const provider = getLocalProvider(localhost);
 
 export const PreviousMatchesList = () => {
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState([] as Match[]);
   const { address } = useAccount();
 
   const { data: flipper } = useScaffoldContract({
@@ -16,9 +20,9 @@ export const PreviousMatchesList = () => {
   const newMatch = {
     timestamp: BigNumber.from(0),
     player1: "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB",
-    player1Stake: [{ contractAddress: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707", id: BigNumber.from(1) }],
+    player1Stake: [{ contractAddress: "0x0165878A594ca255338adfa4d48449f69242Eb8F", id: BigNumber.from(1) }],
     player2: "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015",
-    player2Stake: [{ contractAddress: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707", id: BigNumber.from(0) }],
+    player2Stake: [{ contractAddress: "0x0165878A594ca255338adfa4d48449f69242Eb8F", id: BigNumber.from(0) }],
     gamemode: "wta",
     winner: ethers.constants.AddressZero,
     isSettled: false,
@@ -104,10 +108,9 @@ export const PreviousMatchesList = () => {
     (async () => {
       const matches = await mapAsyncParallel(matchIds, async (id: any) => {
         const match = await flipper?.matches(id);
-        return matchFromLog(id, match);
+        return await matchFromLog(id, match, flipper, provider);
       });
-      setMatches(matches);
-      console.log(matches);
+      setMatches(matches ? (matches as Match[]) : []);
     })();
   }, [
     matchCompletedEventsAsPlayer1,

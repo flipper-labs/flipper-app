@@ -54,8 +54,6 @@ export const useScaffoldEventHistory = <
 
         const indexedParameters = fragment.inputs.filter(input => input.indexed);
 
-        console.log(indexedParameters);
-
         if (indexedParameters.length > 0 && filters) {
           const indexedTopics = indexedParameters.map(input => {
             const value = (filters as any)[input.name];

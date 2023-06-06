@@ -159,6 +159,18 @@ contract Flipper is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
         }
     }
 
+    function getPlayerStake(address player, string calldata matchId) public view returns (NFT[] memory) {
+        require(matches[matchId].player1 != address(0), "getPlayerStake: no such match exists (creator missing)");
+
+        if(matches[matchId].player1 == player) {
+            return matches[matchId].player1Stake;
+        }else if(matches[matchId].player2 == player){
+            return matches[matchId].player2Stake;
+        }
+        
+        return new NFT[](0);
+    }
+
     /**
      * @dev Transfer NFTs from one to another address, if sender owns them.
      */

@@ -24,6 +24,13 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
   const pointOneLink = BigNumber.from("100000000000000000");
   const gasLimit = 300_000;
   const pointZeroZeroThreeLink = BigNumber.from("3000000000000000");
+  const wrapperGasOverhead = BigNumber.from(60_000);
+  const coordinatorGasOverhead = BigNumber.from(52_000);
+  const wrapperPremiumPercentage = 3;
+  const maxNumWords = 3;
+  const keyHash = "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc";
+  const oneHundredLink = BigNumber.from("100000000000000000000"); // 100 LINK
+
   const VRFCoordinatorV2Mock = await deploy("VRFCoordinatorV2Mock", {
     from: deployer,
     // Contract constructor arguments
@@ -51,6 +58,18 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     log: true,
     autoMine: true,
   });
+
+  await execute(
+    "VRFV2Wrapper",
+    { from: deployer, log: true, autoMine: true },
+    "setConfig",
+    wrapperGasOverhead,
+    coordinatorGasOverhead,
+    wrapperPremiumPercentage,
+    keyHash,
+    maxNumWords,
+  );
+
   const flipper = await deploy("Flipper", {
     from: deployer,
     args: [linkToken.address, VRFV2Wrapper.address, BigNumber.from(gasLimit), BigNumber.from(1800)],
@@ -63,6 +82,28 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     log: true,
     autoMine: true,
   });
+
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015", // 0
+  );
+
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 1
+  );
+
+  await execute(
+    "VRFCoordinatorV2Mock",
+    { from: deployer, log: true, autoMine: true },
+    "fundSubscription",
+    1,
+    oneHundredLink,
+  );
 };
 
 export default deployFlipper;

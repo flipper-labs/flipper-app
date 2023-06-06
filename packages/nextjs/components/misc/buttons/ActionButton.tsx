@@ -21,7 +21,6 @@ export const ActionButton = ({
   textSize = "text-lg",
   iconToRight = true,
 }: ActionButtonProps) => {
-  console.log(border);
   return (
     <div
       className={`

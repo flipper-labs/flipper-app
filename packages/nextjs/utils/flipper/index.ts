@@ -1,1 +1,2 @@
-export * from "./arrays.ts";
+export * from "./arrays";
+export * from "./ipfs";
