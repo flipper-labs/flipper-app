@@ -15,9 +15,10 @@ export const getPlayerStake = async (
   player: string,
   matchId: string,
   provider: any,
-): Promise<any[]> => {
+): Promise<NFT[]> => {
   let stakeResponse = await flipper.getPlayerStake(player, matchId);
 
+  const stake = [] as NFT[];
   for (let i = 0; i < stakeResponse.length; i++) {
     const nft: NFT = {
       contract: stakeResponse[i].contractAddress as string,
@@ -42,8 +43,8 @@ export const getPlayerStake = async (
       console.error("Error fetching NFT's image: ", err);
     }
 
-    stakeResponse.push(nft);
+    stake.push(nft);
   }
 
-  return stakeResponse;
+  return stake;
 };

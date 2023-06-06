@@ -1,0 +1,60 @@
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import LossIcon from "./../../public/svgs/loss.svg";
+import WinIcon from "./../../public/svgs/win.svg";
+import { Match } from "~~/models/match";
+
+export interface StatsHeaderProps {
+  address: string;
+  matches: Match[];
+}
+
+export const StatsHeader = ({ address, matches }: StatsHeaderProps) => {
+  const [wins, setWins] = useState(0);
+  const [losses, setLosses] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    let wins = 0;
+    let losses = 0;
+    let total = 0;
+
+    matches.forEach(match => {
+      if (match.isSettled) {
+        if (match.winner === address) wins += 1;
+        if (match.winner === address) wins += 1;
+      }
+      total += 1;
+    });
+
+    setWins(wins);
+    setLosses(losses);
+    setTotal(total);
+  }, []);
+
+  const calculatePercentage = (num: number, total: number): string => {
+    return (num / total).toFixed(0);
+  };
+
+  return (
+    <div className="flex flex-col gap-8 justify-center items-center">
+      <div className="text-3xl font-bold">{address?.slice(0, 5) + "..." + address?.slice(-4)}</div>
+      <div className="flex flex-row gap-[15rem] justify-between items-center">
+        <div className="flex flex-row justify-center items-center gap-3">
+          <WinIcon stroke="white" width={64} height={64} />
+          <div className="flex flex-col justify-center items-start">
+            <div className="text-2xl font-light">{wins} Wins</div>
+            <div className="text-lg font-extralight">{calculatePercentage(wins, total)}%</div>
+          </div>
+        </div>
+        <div className="flex flex-row justify-center items-center gap-3">
+          <LossIcon stroke="white" width={64} height={64} />
+          <div className="flex flex-col justify-center items-start">
+            <div className="text-2xl font-light">{losses} Losses</div>
+            <div className="text-lg font-extralight">{calculatePercentage(losses, total)}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
