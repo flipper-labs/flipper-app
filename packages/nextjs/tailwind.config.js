@@ -93,6 +93,9 @@ module.exports = {
       fontFamily: {
         "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
       },
+      fontSize: {
+        header: "30px"
+      },
       keyframes: {
         grow: {
           "0%": {
