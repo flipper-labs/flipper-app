@@ -54,6 +54,7 @@ export const getNFTImage = async (contract: Contract, tokenId: BigNumber): Promi
 };
 
 export const getUserNFTs = async (contract: Contract, user: string): Promise<NFT[]> => {
+  console.log("INSIDE GET")
   if (!contract) {
     return [];
   }

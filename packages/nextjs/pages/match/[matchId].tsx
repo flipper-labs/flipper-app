@@ -8,7 +8,7 @@ import { useAccount, useProvider, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { Match } from "~~/models/match";
+import { Bargain, Match } from "~~/models/match";
 import { NFT, getUserNFTs } from "~~/models/nfts";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -34,13 +34,49 @@ const MatchLobby = () => {
     signerOrProvider: signer ? (signer as Signer) : undefined,
   });
 
-  const onJoin = (payload: Match) => {
+  async function onJoin(payload: Match) {
     if (match.player2 && match.player2?.wallet !== "") {
       return;
     }
-
+    let player2NFTs: NFT[] = [];
+    player2NFTs = await getUserNFTs(nftContract as Contract, payload.player2.wallet);
     setMatch({ ...payload });
+    setPlayer2NFTs(player2NFTs);
   };
+
+  useEffect(() => {
+    function onBargain(payload: Bargain) {
+      if (match.player2.wallet === payload.player.wallet) {
+        setPlayer2IsLockedIn(payload.locked)
+      }
+
+      if (match.player1.wallet === payload.player.wallet) {
+        setPlayer1IsLockedIn(payload.locked)
+      }
+    };
+
+    socket.on("match:bargain", onBargain);
+
+    return () => {
+      socket.off("match:bargain");
+    };
+  }, [match]);
+
+  function setPlayer1Bargain() {
+    socket.emit("match:bargain", {
+      locked: !isPlayer1LockedIn,
+      player: match.player1,
+      matchID: match.id
+    })
+  }
+
+  function setPlayer2Bargain() {
+    socket.emit("match:bargain", {
+      locked: !isPlayer2LockedIn,
+      player: match.player2,
+      matchID: match.id
+    })
+  }
 
   useEffect(() => {
     (async () => {
@@ -74,15 +110,13 @@ const MatchLobby = () => {
           return nft;
         });
 
-        player2NFTs = await getUserNFTs(nftContract as Contract, match.player2.wallet);
+        if (match.player2.wallet !== "") {
+          player2NFTs = await getUserNFTs(nftContract as Contract, match.player2.wallet);
+        }
       }
 
       setPlayer1NFTs(player1NFTs);
       setPlayer2NFTs(player2NFTs);
-
-      // TODO: Player 2 NFTs are not displayed immediatelly
-
-      console.log(player2NFTs);
     })();
 
     socket.on("match:join", onJoin);
@@ -90,23 +124,23 @@ const MatchLobby = () => {
     return () => {
       socket.off("match:join");
     };
-  }, [matchId]);
+  }, [matchId, nftContract]);
 
-  useEffect(() => {
-    if (!player1NFTs) return;
+  // useEffect(() => {
+  //   if (!player1NFTs) return;
 
-    const newMatch = { ...match };
-    newMatch.player1.nfts = [...player1NFTs];
-    setMatch(newMatch);
-  }, [player1NFTs]);
+  //   const newMatch = { ...match };
+  //   newMatch.player1.nfts = [...player1NFTs];
+  //   setMatch(newMatch);
+  // }, [player1NFTs]);
 
-  useEffect(() => {
-    if (!player2NFTs) return;
+  // useEffect(() => {
+  //   if (!player2NFTs) return;
 
-    const newMatch = { ...match };
-    newMatch.player2.nfts = [...player2NFTs];
-    setMatch(newMatch);
-  }, [player2NFTs]);
+  //   const newMatch = { ...match };
+  //   newMatch.player2.nfts = [...player2NFTs];
+  //   setMatch(newMatch);
+  // }, [player2NFTs]);
 
   const createMatch = async () => {
     const res = await flipper?.createMatch(matchId as string, {
@@ -134,64 +168,50 @@ const MatchLobby = () => {
     <div>
       <div className="flex justify-center items-center flex-row p-5 gap-4 w-full">
         <div
-          style={{ width: "50%" }}
-          className="flex flex-col justify-center items-center gap-3 border border-purple-500 backdrop-blur bg-opacity-50 rounded-lg"
+          style={{ width: "50%", height: "50vh" }}
+          className="flex flex-col justify-center items-center gap-3 border border-purple-500 backdrop-blur bg-opacity-50 rounded-lg pb-1 m-0"
         >
           <PlayerNFTs
-            coin_image="coin-front.svg"
-            icon_align="float-left"
+            coin_image="/coin-front.svg"
+            icon_align="absolute top-1 left-1"
             player={match?.player1?.wallet}
             nfts={player1NFTs ? player1NFTs : []}
             isLockedIn={isPlayer1LockedIn}
-            setIsLockedIn={setPlayer1IsLockedIn}
+            setIsLockedIn={setPlayer1Bargain}
             setNFTs={setPlayer1NFTs}
           />
-          {/** TODO: Lock in is not working properly. */}
-          {isPlayer1LockedIn && isPlayer2LockedIn && address === match.player1.wallet ? (
-            <div className="w-1/2">
-              <ActionButton
-                action="Create Match"
-                color="white"
-                iconToRight={false}
-                background="#F050F2"
-                paddingX={3}
-                paddingY={1}
-                onClick={async () => await createMatch()}
-              />
-            </div>
-          ) : (
-            ""
-          )}
         </div>
         <div
-          style={{ width: "50%" }}
-          className="flex flex-col justify-center items-center gap-3 border border-white-500 backdrop-blur bg-opacity-50 rounded-lg"
+          style={{ width: "50%", height: "50vh" }}
+          className="flex flex-col justify-center items-center gap-3 border border-white-500 backdrop-blur bg-opacity-50 rounded-lg pb-1"
         >
           <PlayerNFTs
-            coin_image="coin-back.svg"
-            icon_align="float-right"
+            coin_image="/coin-back.svg"
+            icon_align="absolute top-1 right-1 transform translate-x-[-full] -translate-y-[-full]"
             player={match?.player2?.wallet}
             nfts={player2NFTs ? player2NFTs : []}
             isLockedIn={isPlayer2LockedIn}
-            setIsLockedIn={setPlayer2IsLockedIn}
+            setIsLockedIn={setPlayer2Bargain}
             setNFTs={setPlayer2NFTs}
           />
-          {isPlayer1LockedIn && isPlayer2LockedIn && address === match.player2.wallet ? (
-            <div className="w-1/2">
-              <ActionButton
-                action="Create Match"
-                color="white"
-                iconToRight={false}
-                background="#F050F2"
-                paddingX={3}
-                paddingY={1}
-                onClick={async () => await createMatch()}
-              />
-            </div>
-          ) : (
-            ""
-          )}
         </div>
+      </div>
+      <div className="flex flex-col justify-center items-center gap-3" style={{height: '5vh'}}>
+        {isPlayer1LockedIn && isPlayer2LockedIn ? (
+              <div className="w-1/6">
+                <ActionButton
+                  action="Create Match"
+                  color="white"
+                  iconToRight={false}
+                  background="#F050F2"
+                  paddingX={3}
+                  paddingY={1}
+                  onClick={async () => await createMatch()}
+                />
+              </div>
+            ) : (
+              ""
+            )}
       </div>
       <div style={{ height: "30vh" }} className="flex h-full w-full px-10 py-5 h-100 gap-10">
         <div className="w-full">

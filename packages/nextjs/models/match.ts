@@ -38,6 +38,12 @@ export interface Match {
   isSettled: boolean;
 }
 
+export interface Bargain {
+  readonly matchID: string;
+  player: Player;
+  locked: boolean;
+}
+
 export interface Player {
   wallet: string;
   nfts?: NFT[];
