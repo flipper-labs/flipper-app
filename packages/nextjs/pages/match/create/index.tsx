@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import { NFTGrid } from "~~/components/NFTGrid";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
-import { NFT, getNFTImage } from "~~/models/nfts";
+import { NFT, getUserNFTs } from "~~/models/nfts";
 
 const CreateMatch: NextPage = () => {
   const router = useRouter();
@@ -24,20 +24,11 @@ const CreateMatch: NextPage = () => {
 
   useEffect(() => {
     (async () => {
-      if (nftContract) {
-        const tokenIds = await nftContract?.getOwnerTokens(address);
-        const newNft = [];
-        for (let i = 0; i < tokenIds.length; i++) {
-          const image = await getNFTImage(nftContract, tokenIds[i]);
+      if (nftContract && address) {
+        const nfts = await getUserNFTs(nftContract, address);
+        // TODO: Player's NFTs are not dispalyed immediatelly
 
-          newNft.push({
-            contract: nftContract.address,
-            tokenId: tokenIds[i],
-            image: image,
-            selected: false,
-          });
-        }
-        setNfts(newNft);
+        setNfts(nfts);
       }
     })();
 
@@ -73,7 +64,7 @@ const CreateMatch: NextPage = () => {
     <>
       <div className="flex justify-center items-center flex-col pt-10 gap-4 w-full">
         <div className="text-header">Pick the NFTs</div>
-        <NFTGrid nfts={nfts} setNfts={setNfts} />
+        <NFTGrid nfts={nfts} setNfts={setNfts} player={address ? address : ""} isLockedIn={false} />
         <div className="mt-3">
           <ActionButton
             action="Create Match"

@@ -1,12 +1,21 @@
+import { useAccount } from "wagmi";
 import { NFT } from "~~/models/nfts";
 
 interface NFTGridProps {
+  player: string;
   nfts: NFT[];
   setNfts: any;
+  isLockedIn: boolean;
 }
 
-export const NFTGrid = ({ nfts, setNfts }: NFTGridProps) => {
+export const NFTGrid = ({ player, nfts, setNfts, isLockedIn }: NFTGridProps) => {
+  const { address } = useAccount();
+
   const handleClick = (i: any) => {
+    if (address !== player || isLockedIn) {
+      return;
+    }
+
     const newNft = [...nfts];
     newNft[i].selected = !newNft[i].selected;
     setNfts(newNft);
