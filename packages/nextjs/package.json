@@ -16,6 +16,7 @@
   "dependencies": {
     "@ethersproject/networks": "^5.7.1",
     "@ethersproject/web": "^5.7.1",
+    "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.11",
     "@rainbow-me/rainbowkit": "^0.11.0",
     "@svgr/webpack": "^8.0.1",
@@ -31,6 +32,8 @@
     "react-fast-marquee": "^1.3.5",
     "react-hot-toast": "^2.4.0",
     "react-jazzicon": "^1.0.4",
+    "socket.io-client": "^4.6.2",
+    "three": "^0.152.1",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
     "wagmi": "^0.11.6",

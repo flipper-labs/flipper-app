@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { ActionButton } from "../misc/buttons/ActionButton";
 import { StatusButton } from "../misc/buttons/StatusButton";
 import { MatchPreviewUser } from "./MatchPreviewUser";
-import { useIsMounted } from "usehooks-ts";
 
 export interface MatchPreviewProps {}
 
-export const MatchPreview = () => {
-  const isMounted = useIsMounted();
+export const MatchPreview = (props: any) => {
+
+  var action_button = <ActionButton action="Watch" color="#F050F2" />
+  if (props.match_data.player2.wallet == "") {
+    action_button = <ActionButton action="Join" color="#46D05C" />
+  }
 
   return (
     <div
@@ -16,11 +19,11 @@ export const MatchPreview = () => {
       border-[1px] border-solid rounded-lg border-gray-400
       `}
     >
-      <MatchPreviewUser address="0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB" stake={3} />
+      <MatchPreviewUser address={props.match_data.player1.wallet} stake={props.match_data.player1.nfts.length} />
       <div className="text-lg">VS</div>
-      <MatchPreviewUser address="0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015" stake={2} />
+      <MatchPreviewUser address={props.match_data.player2.wallet} stake={props.match_data.player2.nfts.length} />
       <StatusButton status="LIVE" color="#F050F2" />
-      <ActionButton action="Spectate" color="#46D05C" />
+      {action_button}
     </div>
   );
 };

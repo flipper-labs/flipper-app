@@ -10,6 +10,16 @@ export const MatchPreviewUser = ({ address, stake }: { address: string; stake: n
     return seed;
   };
 
+  if (address == "") {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-row justify-center items-center gap-4">
+          <div className="text-lg">?</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="flex flex-row justify-center items-center gap-4">

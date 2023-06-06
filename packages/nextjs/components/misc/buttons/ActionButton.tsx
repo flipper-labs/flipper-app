@@ -9,6 +9,7 @@ interface ActionButtonProps {
   paddingX?: number;
   iconToRight?: boolean;
   textSize?: string;
+  onClick?: any;
 }
 
 export const ActionButton = ({
@@ -20,9 +21,10 @@ export const ActionButton = ({
   paddingX,
   textSize = "text-lg",
   iconToRight = true,
+  onClick,
 }: ActionButtonProps) => {
   return (
-    <div
+    <div onClick={onClick}
       className={`
       box-border flex flex-row justify-center items-center py-2 gap-2 cursor-pointer
       transition duration-150 hover:scale-105 rounded-lg
