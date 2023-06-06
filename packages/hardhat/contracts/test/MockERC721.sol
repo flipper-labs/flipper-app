@@ -41,4 +41,13 @@ contract MockERC721 is ERC721Enumerable, Ownable {
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable) returns (bool) {
       return super.supportsInterface(interfaceId);
     }
+
+    function getOwnerTokens(address owner) public view returns (uint256[] memory) {
+        uint256 owner_balance = super.balanceOf(owner);
+        uint256[] memory tokenIds = new uint256[](owner_balance);
+        for(uint i = 0; i < owner_balance; i++){
+            tokenIds[i] = super.tokenOfOwnerByIndex(owner, i);
+        }
+        return tokenIds;
+    }
 }
