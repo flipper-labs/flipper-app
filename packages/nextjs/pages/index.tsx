@@ -52,9 +52,11 @@ const Home: NextPage = () => {
       <div className="flex items-center flex-col pt-10 gap-4 w-full">
         <Cover />
         <MatchActions />
-        {matches.map((item, index) => (
-          <MatchPreview key={index} match_data={item}/>
-        ))}
+        <div style={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between"}} className="scrollable-div hide-scroll">
+          {matches.map((item, index) => (
+            <MatchPreview key={index} match_data={item}/>
+          ))}
+        </div>
       </div>
     </>
   );
