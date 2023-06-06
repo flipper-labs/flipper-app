@@ -56,7 +56,7 @@ const CreateMatch: NextPage = () => {
 
     socket.emit("match:create", {
       "creator": {
-          "wallet": {address},
+          "wallet": address,
           "nfts": mynfts
       },
       "gamemode": "Winner Takes All"
