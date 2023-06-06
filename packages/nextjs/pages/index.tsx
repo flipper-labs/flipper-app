@@ -7,7 +7,7 @@ import { MatchActions } from "~~/components/start/MatchActions";
 import { MatchPreview } from "~~/components/start/MatchPreview";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import {socket} from "../services/socket"
+import {socket, httpServerURL} from "../services/socket"
 
 const Home: NextPage = () => {
   const [matches, setMatches] = useState([])
@@ -18,11 +18,11 @@ const Home: NextPage = () => {
       "checked": true
     },
     {
-      "name": "Active",
+      "name": "Ongoing",
       "checked": false
     },
     {
-      "name": "Available",
+      "name": "Created",
       "checked": false
     }
   ] )
@@ -59,15 +59,9 @@ const Home: NextPage = () => {
       setMatches(matches => [...matches, match]);
     }
 
-    function onActiveMatches(matches: any) {
-      setMatches(matches);
-    }
-
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('match:create', onMatchCreate)
-    socket.on('match:all_active', onActiveMatches)
-    socket.emit('match:all_active', "")
 
     return () => {
       socket.off('connect', onConnect);
@@ -75,6 +69,53 @@ const Home: NextPage = () => {
       socket.off('match:create', onMatchCreate)
     };
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        var queryData = {
+          "player": nameFilter,
+          "status": [],
+          "nftNumber": []
+        };
+
+        for (let i = 0; i < statusFilter.length; i++) {
+          if (statusFilter[i].name == "None") {
+            continue;
+          }
+          queryData.status.push({
+            "value": statusFilter[i].name,
+            "checked": statusFilter[i].checked
+          })
+        }
+
+        for (let i = 0; i < nftNumberFilter.length; i++) {
+          if (nftNumberFilter[i].name == "None") {
+            continue;
+          }
+          queryData.nftNumber.push({
+            "value": nftNumberFilter[i].name,
+            "checked": nftNumberFilter[i].checked
+          })
+        }
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(queryData),
+        };
+        const response = await fetch(httpServerURL + "/matches", requestOptions);
+        const jsonData = await response.json();
+        setMatches(jsonData.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [statusFilter, nameFilter, nftNumberFilter]);
 
   return (
     <>
