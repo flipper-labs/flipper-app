@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { ActionButton } from "../misc/buttons/ActionButton";
 import Link from "next/link";
+import { ActionButton } from "../misc/buttons/ActionButton";
 
 export const Cover = () => {
   return (
@@ -16,7 +16,7 @@ export const Cover = () => {
         />
       </div>
       <div className="flex flex-col justify-around">
-        <Link href="/create_match">
+        <Link href="/match/create">
           <ActionButton
             action="Create Match"
             color="white"

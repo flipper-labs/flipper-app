@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { socket } from "../../services/socket";
+import { useRouter } from "next/router";
+import { socket } from "../../../services/socket";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTGrid } from "~~/components/NFTGrid";
@@ -10,11 +10,17 @@ import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { NFT, getNFTImage } from "~~/models/nfts";
 
 const CreateMatch: NextPage = () => {
+  const router = useRouter();
   const { address } = useAccount();
+  const [matchId, setMatchId] = useState<string>("");
   const [nfts, setNfts] = useState<NFT[]>([]);
   const { data: nftContract } = useScaffoldContract({
     contractName: "MockERC721",
   });
+
+  function onMatchCreate(match: any) {
+    setMatchId(match.id);
+  }
 
   useEffect(() => {
     (async () => {
@@ -34,7 +40,17 @@ const CreateMatch: NextPage = () => {
         setNfts(newNft);
       }
     })();
+
+    socket.on("match:create", onMatchCreate);
+
+    return () => {
+      socket.off("match:create", onMatchCreate);
+    };
   }, [address]);
+
+  useEffect(() => {
+    matchId && router.push(`/match/${matchId}`);
+  }, [matchId]);
 
   const handleClick = () => {
     const mynfts = [];
@@ -57,19 +73,17 @@ const CreateMatch: NextPage = () => {
     <>
       <div className="flex justify-center items-center flex-col pt-10 gap-4 w-full">
         <div className="text-header">Pick the NFTs</div>
-        <NFTGrid nfts={nfts} setNfts={setNfts}></NFTGrid>
+        <NFTGrid nfts={nfts} setNfts={setNfts} />
         <div className="mt-3">
-          <Link href="/create_match/match_lobby">
-            <ActionButton
-              action="Create Match"
-              color="white"
-              iconToRight={false}
-              background="#F050F2"
-              paddingX={3}
-              paddingY={1}
-              onClick={handleClick}
-            />
-          </Link>
+          <ActionButton
+            action="Create Match"
+            color="white"
+            iconToRight={false}
+            background="#F050F2"
+            paddingX={3}
+            paddingY={1}
+            onClick={handleClick}
+          />
         </div>
       </div>
     </>
