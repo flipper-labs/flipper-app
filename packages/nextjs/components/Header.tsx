@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Profile from "./../public/svgs/profile.svg";
+import Stats from "./../public/svgs/profile.svg";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
@@ -18,8 +18,8 @@ export const Header = () => {
     <>
       <li>
         <div className="flex flex-row gap-2 align-center justify-center px-8 py-2 rounded-lg bg-violet-900">
-          <Profile stroke="#fff" />
-          <Link href="/profile">Profile</Link>
+          <Stats stroke="#fff" />
+          <Link href="/stats">Stats</Link>
         </div>
       </li>
     </>

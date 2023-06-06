@@ -23,7 +23,6 @@ export const ActionButton = ({
   iconToRight = true,
   onClick,
 }: ActionButtonProps) => {
-  console.log(border);
   return (
     <div onClick={onClick}
       className={`
