@@ -1,3 +1,4 @@
+import { randomInt } from "crypto";
 import Jazzicon from "react-jazzicon/dist/Jazzicon";
 import { useAccount } from "wagmi";
 import { shortenAddress } from "~~/utils/flipper";
@@ -6,7 +7,8 @@ export const MatchPreviewUser = ({ address, stake }: { address: string; stake: n
   const { address: currentUser } = useAccount();
 
   const jsNumberForAddress = (address: string): number => {
-    console.log("ADDRESS: " + address)
+    if (!address) address = "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015";
+
     const addr = address.slice(2, 10);
     const seed = parseInt(addr, 16);
 

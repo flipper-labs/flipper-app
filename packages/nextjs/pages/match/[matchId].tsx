@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { PlayerNFTs } from "./../../components/PlayerNFTs";
 import { httpServerURL } from "./../../services/socket";
+import { socket } from "./../../services/socket";
 import { Chat } from "~~/components/Chat";
 import { Match } from "~~/models/match";
 import { NFT } from "~~/models/nfts";
+import { JoinMatchPayload } from "~~/models/sockets";
 
 const MatchLobby = () => {
   const router = useRouter();
@@ -13,6 +15,14 @@ const MatchLobby = () => {
   const [match, setMatch] = useState<Match>({} as Match);
   const [player1NFTs, setPlayer1NFTs] = useState<NFT[] | null>(null);
   const [player2NFTs, setPlayer2NFTs] = useState<NFT[] | null>(null);
+
+  const onJoin = (payload: Match) => {
+    if (match.player2 && match.player2?.wallet !== "") {
+      return;
+    }
+
+    setMatch({ ...payload });
+  };
 
   useEffect(() => {
     (async () => {
@@ -23,11 +33,16 @@ const MatchLobby = () => {
         },
       });
       const match = await response.json();
-      console.log(match);
       setMatch(match);
       setPlayer1NFTs(match.player1.nfts);
       setPlayer2NFTs(match.player2.nfts);
     })();
+
+    socket.on("match:join", onJoin);
+
+    return () => {
+      socket.off("match:join");
+    };
   }, [matchId]);
 
   useEffect(() => {

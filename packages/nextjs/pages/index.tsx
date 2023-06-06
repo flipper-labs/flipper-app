@@ -9,7 +9,7 @@ import { MatchActions } from "~~/components/start/MatchActions";
 import { MatchPreview } from "~~/components/start/MatchPreview";
 
 const Home: NextPage = () => {
-  const account = useAccount();
+  const { address } = useAccount();
   const router = useRouter();
   const [matches, setMatches] = useState([]);
   const [nameFilter, setNameFilter] = useState("");
@@ -57,11 +57,11 @@ const Home: NextPage = () => {
     }
 
     function onMatchCreate(match: any) {
-      setMatches(matches => [...matches, match]);
+      setMatches([...matches, match]);
     }
 
     function onMatchJoin(match: any) {
-      if (match.player2.wallet === account?.address) {
+      if (match.player2.wallet === address) {
         console.log("Joining match with id: " + match.id);
         router.push(`match/${match.id}`);
       }
@@ -78,7 +78,7 @@ const Home: NextPage = () => {
       socket.off("match:create", onMatchCreate);
       socket.off("match:join", onMatchJoin);
     };
-  }, [account]);
+  }, [address]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,8 +148,8 @@ const Home: NextPage = () => {
           className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full"
           style={{ height: "45vh" }}
         >
-          {matches.map((item, index) => (
-            <MatchPreview key={index} match_data={item} account={account} />
+          {matches.map((match, index) => (
+            <MatchPreview key={index} match={match} />
           ))}
         </div>
       </div>
