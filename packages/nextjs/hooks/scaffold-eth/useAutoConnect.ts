@@ -48,7 +48,8 @@ const getInitialConnector = (
  * Automatically connect to a wallet/connector based on config and prior wallet
  */
 export const useAutoConnect = (): void => {
-  const [walletId, setWalletId] = useLocalStorage<string>(walletIdStorageKey, "");
+  // TODO: temp fix to default to metaMask, for some reason storage is not storing prev wallet
+  const [walletId, setWalletId] = useLocalStorage<string>(walletIdStorageKey, "metaMask");
   const connectState = useConnect();
   const accountState = useAccount();
 
