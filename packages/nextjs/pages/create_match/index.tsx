@@ -1,67 +1,58 @@
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { socket } from "../../services/socket";
 import type { NextPage } from "next";
-import { ActionButton } from "~~/components/misc/buttons/ActionButton";
-import { NFTGrid } from "~~/components/NFTGrid";
-import imageUrl from "~~/public/nftImages/robbotNFT.png"
-import { useEffect, useState } from "react";
-import {socket} from "../../services/socket"
 import { useAccount } from "wagmi";
-import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
-import { fetchFromIpfs } from "~~/utils/flipper";
+import { NFTGrid } from "~~/components/NFTGrid";
+import { ActionButton } from "~~/components/misc/buttons/ActionButton";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { NFT, getNFTImage } from "~~/models/nfts";
 
 const CreateMatch: NextPage = () => {
-  const account = useAccount()
-  console.log("socket connected: ", socket.connected)
-  const address = account.address
-  const [nfts, setNfts]: Array<any> = useState([])
-  const { data: nft } = useScaffoldContract({
+  const { address } = useAccount();
+  const [nfts, setNfts] = useState<NFT[]>([]);
+  const { data: nftContract } = useScaffoldContract({
     contractName: "MockERC721",
   });
-  
+
   useEffect(() => {
     (async () => {
-      if(nft){
-        const tokenIds = await nft?.getOwnerTokens(address)
+      if (nftContract) {
+        const tokenIds = await nftContract?.getOwnerTokens(address);
         const newNft = [];
-        for(let i = 0; i < tokenIds.length; i ++){
-          const metadata = await nft?.tokenURI(tokenIds[i]);
-          console.log("Metadata: ", metadata)
-          const image = await fetchFromIpfs(metadata.substring(7));
-          console.log("Image url: ", image)
-          
+        for (let i = 0; i < tokenIds.length; i++) {
+          const image = await getNFTImage(nftContract, tokenIds[i]);
+
           newNft.push({
-            imageUrl: image,
+            contract: nftContract.address,
+            tokenId: tokenIds[i],
+            image: image,
             selected: false,
-            tokenId: tokenIds[i]
-          }) 
+          });
         }
-        setNfts(newNft)
-        console.log("NFTs: ", nfts)
-        console.log("Token ids: ", tokenIds)
+        setNfts(newNft);
       }
-    })()
-  }, [address])
+    })();
+  }, [address]);
+
   const handleClick = () => {
-    // const mynfts = nfts.filter((n: any) => n.selected)
-    const mynfts = []
-    for(let i = 0; i < nfts.length; i ++){
-      if(nfts[i].selected){
-        mynfts.push({
-          contract: nft?.address,
-          tokenId: nfts[i].tokenId
-        })
+    const mynfts = [];
+    for (let i = 0; i < nfts.length; i++) {
+      if (nfts[i].selected) {
+        mynfts.push(nfts[i]);
       }
     }
 
     socket.emit("match:create", {
-      "creator": {
-          "wallet": address,
-          "nfts": mynfts
+      creator: {
+        wallet: address,
+        nfts: mynfts,
       },
-      "gamemode": "Winner Takes All"
-    })
-  }
+      gamemode: "Winner Takes All",
+    });
+  };
+
   return (
     <>
       <div className="flex justify-center items-center flex-col pt-10 gap-4 w-full">

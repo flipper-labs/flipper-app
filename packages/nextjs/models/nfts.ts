@@ -6,6 +6,7 @@ export interface NFT {
   contract: string;
   tokenId: number;
   image?: string;
+  selected?: boolean;
 }
 
 const contracts = new Map<string, Contract>();
@@ -36,9 +37,7 @@ export const getPlayerStake = async (
     }
 
     try {
-      const metadata = await contracts.get(nft.contract)?.tokenURI(BigNumber.from(nft.tokenId));
-      const image = await fetchFromIpfs(metadata.substring(7));
-      nft.image = image;
+      nft.image = await getNFTImage(contracts.get(nft.contract) as Contract, BigNumber.from(nft.tokenId));
     } catch (err) {
       console.error("Error fetching NFT's image: ", err);
     }
@@ -47,4 +46,9 @@ export const getPlayerStake = async (
   }
 
   return stake;
+};
+
+export const getNFTImage = async (contract: Contract, tokenId: BigNumber): Promise<string> => {
+  const metadata = await contract?.tokenURI(tokenId);
+  return await fetchFromIpfs(metadata.substring(7));
 };
