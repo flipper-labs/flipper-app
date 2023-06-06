@@ -11,6 +11,40 @@ import {socket} from "../services/socket"
 
 const Home: NextPage = () => {
   const [matches, setMatches] = useState([])
+  const [nameFilter, setNameFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState( [
+    {
+      "name": "None",
+      "checked": true
+    },
+    {
+      "name": "Active",
+      "checked": false
+    },
+    {
+      "name": "Available",
+      "checked": false
+    }
+  ] )
+
+  const [nftNumberFilter, setNftNumberFilter] = useState( [
+    {
+      "name": "None",
+      "checked": true
+    },
+    {
+      "name": "0-2",
+      "checked": false
+    },
+    {
+      "name": "3-5",
+      "checked": false
+    },
+    {
+      "name": "6+",
+      "checked": false
+    }
+  ] )
 
   useEffect(() => {
     function onConnect() {
@@ -49,15 +83,19 @@ const Home: NextPage = () => {
         <meta name="description" content="Gamble your NFTs" />
       </Head>
 
-      <div className="flex items-center flex-col pt-10 gap-4 w-full">
+      <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
         <Cover />
-        <MatchActions />
-        {matches.map((item, index) => (
-          <MatchPreview key={index} match_data={item}/>
-        ))}
+        <MatchActions statusFilter={statusFilter} setStatusFilter={setStatusFilter} 
+                      nftNumberFilter={nftNumberFilter} setNftNumberFilter={setNftNumberFilter}
+                      nameFilter={nameFilter} setNameFilter={setNameFilter}/>
+        <div className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full" style={{height: '45vh'}}>
+          {matches.map((item, index) => (
+            <MatchPreview key={index} match_data={item}/>
+          ))}
+        </div>
       </div>
     </>
   );
-};
+}; 
 
 export default Home;
