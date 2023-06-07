@@ -44,6 +44,12 @@ export interface Bargain {
   locked: boolean;
 }
 
+export interface BargainResponse {
+  match: Match;
+  player: Player;
+  isLockedIn: boolean;
+}
+
 export interface Player {
   wallet: string;
   nfts?: NFT[];
