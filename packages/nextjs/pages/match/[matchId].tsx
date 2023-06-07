@@ -4,10 +4,10 @@ import { PlayerNFTs } from "./../../components/PlayerNFTs";
 import { httpServerURL } from "./../../services/socket";
 import { socket } from "./../../services/socket";
 import { BigNumber, Contract, Signer, constants } from "ethers";
-import { useAccount, useProvider, useSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
-import { useScaffoldContract, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { Bargain, Match } from "~~/models/match";
 import { NFT, getUserNFTs } from "~~/models/nfts";
 import { notification } from "~~/utils/scaffold-eth";
@@ -42,20 +42,20 @@ const MatchLobby = () => {
     player2NFTs = await getUserNFTs(nftContract as Contract, payload.player2.wallet);
     setMatch({ ...payload });
     setPlayer2NFTs(player2NFTs);
-  };
+  }
 
   useEffect(() => {
     function onBargain(payload: Bargain) {
       if (match.player2.wallet === payload.player.wallet) {
-        setPlayer2IsLockedIn(payload.locked)
-        setPlayer2NFTs(payload.player.nfts)
+        setPlayer2IsLockedIn(payload.locked);
+        setPlayer2NFTs(payload.player.nfts ? payload.player.nfts : []);
       }
 
       if (match.player1.wallet === payload.player.wallet) {
-        setPlayer1IsLockedIn(payload.locked)
-        setPlayer1NFTs(payload.player.nfts)
+        setPlayer1IsLockedIn(payload.locked);
+        setPlayer1NFTs(payload.player.nfts ? payload.player.nfts : []);
       }
-    };
+    }
 
     socket.on("match:bargain", onBargain);
 
@@ -69,10 +69,10 @@ const MatchLobby = () => {
       locked: !isPlayer1LockedIn,
       player: {
         wallet: match.player1.wallet,
-        nfts: player1NFTs
+        nfts: player1NFTs,
       },
-      matchID: match.id
-    })
+      matchID: match.id,
+    });
   }
 
   function setPlayer2Bargain() {
@@ -80,34 +80,34 @@ const MatchLobby = () => {
       locked: !isPlayer2LockedIn,
       player: {
         wallet: match.player2.wallet,
-        nfts: player2NFTs
+        nfts: player2NFTs,
       },
-      matchID: match.id
-    })
+      matchID: match.id,
+    });
   }
 
   function setPlayer1NewNFT(nfts: any) {
-    setPlayer1NFTs(nfts)
+    setPlayer1NFTs(nfts);
     socket.emit("match:bargain", {
       locked: isPlayer1LockedIn,
       player: {
         wallet: match.player1.wallet,
-        nfts: player1NFTs
+        nfts: nfts,
       },
-      matchID: match.id
-    })
+      matchID: match.id,
+    });
   }
 
   function setPlayer2NewNFT(nfts: any) {
-    setPlayer2NFTs(nfts)
+    setPlayer2NFTs(nfts);
     socket.emit("match:bargain", {
       locked: isPlayer2LockedIn,
       player: {
         wallet: match.player2.wallet,
-        nfts: player2NFTs
+        nfts: nfts,
       },
-      matchID: match.id
-    })
+      matchID: match.id,
+    });
   }
 
   useEffect(() => {
@@ -120,7 +120,6 @@ const MatchLobby = () => {
       });
       const match: Match = await response.json();
       setMatch(match);
-      console.log(match)
 
       let player1NFTs: NFT[] = [];
       if (match.player1.nfts) {
@@ -221,7 +220,7 @@ const MatchLobby = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-3" style={{height: '5vh'}}>
+      <div className="flex flex-col justify-center items-center gap-3" style={{ height: "5vh" }}>
         {isPlayer1LockedIn && isPlayer2LockedIn ? (
           <div className="w-1/6">
             <ActionButton
