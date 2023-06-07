@@ -135,8 +135,14 @@ const MatchLobby = () => {
       if (nftContract) {
         player1NFTs = await getUserNFTs(nftContract as Contract, match.player1.wallet);
         player1NFTs = player1NFTs.map((nft: NFT) => {
-          const tokenFound = match.player1.nfts?.filter((mnft: NFT) => mnft?.tokenId === nft?.tokenId);
-          if (tokenFound) {
+          const tokenFound = [];
+          for (let i = 0; i < match.player1.nfts.length; i++) {
+            const mnft = match.player1.nfts[i];
+            if (mnft && mnft.tokenId.hex === nft.tokenId._hex) {
+              tokenFound.push(mnft);
+            }
+          }
+          if (tokenFound && tokenFound.length > 0) {
             nft.selected = true;
           } else {
             nft.selected = false; // Set selected to false for NFTs not found in match.player1.nfts
