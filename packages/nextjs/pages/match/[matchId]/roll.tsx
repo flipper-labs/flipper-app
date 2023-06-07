@@ -92,8 +92,6 @@ const Roll = () => {
     if (nftContract && player && player.nfts) {
       const promises = [];
 
-      console.log(nftContract);
-
       try {
         for (let i = 0; i < player.nfts?.length; i++) {
           promises.push(
@@ -114,13 +112,34 @@ const Roll = () => {
     }
   };
 
-  const startMatch = async () => {
-    console.log(flipper);
-    console.log(matchId);
+  const { writeAsync: startMatchAsync, isLoading } = useScaffoldContractWrite({
+    contractName: "Flipper",
+    functionName: "startMatch",
+    args: [matchId as string],
+    value: "0",
+    onBlockConfirmation: async txnReceipt => {
+      const finishedMatchRaw = await flipper?.matches(matchId);
+      const convertedMatch = await matchFromLog(matchId as string, finishedMatchRaw, flipper, nftContract);
 
+      if (convertedMatch.winner === convertedMatch.player1.wallet) {
+        handleLogoFlips();
+        notification.info(convertedMatch.winner + " has won!");
+      } else if (convertedMatch.winner === convertedMatch.player2.wallet) {
+        handleEmptyFlips();
+        notification.info(convertedMatch.winner + " has won!");
+      }
+
+      setTimeout(() => {
+        router.push(`/results/${currentUser === convertedMatch.winner ? "true" : "false"}`);
+      }, 5000);
+    },
+  });
+
+  const startMatch = async () => {
     try {
-      const res = await flipper?.startMatch(`${matchId}`);
-      console.log(res);
+      handleFlipStart();
+
+      await startMatchAsync();
     } catch (err: any) {
       notification.error(err.message);
     }
