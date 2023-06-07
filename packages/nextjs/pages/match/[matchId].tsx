@@ -48,10 +48,12 @@ const MatchLobby = () => {
     function onBargain(payload: Bargain) {
       if (match.player2.wallet === payload.player.wallet) {
         setPlayer2IsLockedIn(payload.locked)
+        setPlayer2NFTs(payload.player.nfts)
       }
 
       if (match.player1.wallet === payload.player.wallet) {
         setPlayer1IsLockedIn(payload.locked)
+        setPlayer1NFTs(payload.player.nfts)
       }
     };
 
@@ -65,7 +67,10 @@ const MatchLobby = () => {
   function setPlayer1Bargain() {
     socket.emit("match:bargain", {
       locked: !isPlayer1LockedIn,
-      player: match.player1,
+      player: {
+        wallet: match.player1.wallet,
+        nfts: player1NFTs
+      },
       matchID: match.id
     })
   }
@@ -73,7 +78,34 @@ const MatchLobby = () => {
   function setPlayer2Bargain() {
     socket.emit("match:bargain", {
       locked: !isPlayer2LockedIn,
-      player: match.player2,
+      player: {
+        wallet: match.player2.wallet,
+        nfts: player2NFTs
+      },
+      matchID: match.id
+    })
+  }
+
+  function setPlayer1NewNFT(nfts: any) {
+    setPlayer1NFTs(nfts)
+    socket.emit("match:bargain", {
+      locked: isPlayer1LockedIn,
+      player: {
+        wallet: match.player1.wallet,
+        nfts: player1NFTs
+      },
+      matchID: match.id
+    })
+  }
+
+  function setPlayer2NewNFT(nfts: any) {
+    setPlayer2NFTs(nfts)
+    socket.emit("match:bargain", {
+      locked: isPlayer2LockedIn,
+      player: {
+        wallet: match.player2.wallet,
+        nfts: player2NFTs
+      },
       matchID: match.id
     })
   }
@@ -88,6 +120,7 @@ const MatchLobby = () => {
       });
       const match: Match = await response.json();
       setMatch(match);
+      console.log(match)
 
       let player1NFTs: NFT[] = [];
       if (match.player1.nfts) {
@@ -103,8 +136,10 @@ const MatchLobby = () => {
         player1NFTs = await getUserNFTs(nftContract as Contract, match.player1.wallet);
         player1NFTs = player1NFTs.map((nft: NFT) => {
           const tokenFound = match.player1.nfts?.filter((mnft: NFT) => mnft?.tokenId === nft?.tokenId);
-          if (tokenFound && tokenFound.length > 0) {
+          if (tokenFound) {
             nft.selected = true;
+          } else {
+            nft.selected = false; // Set selected to false for NFTs not found in match.player1.nfts
           }
 
           return nft;
@@ -126,13 +161,9 @@ const MatchLobby = () => {
     };
   }, [matchId, nftContract]);
 
-  // useEffect(() => {
-  //   if (!player1NFTs) return;
-
-  //   const newMatch = { ...match };
-  //   newMatch.player1.nfts = [...player1NFTs];
-  //   setMatch(newMatch);
-  // }, [player1NFTs]);
+  useEffect(() => {
+    console.log("test")
+  }, [player1NFTs]);
 
   // useEffect(() => {
   //   if (!player2NFTs) return;
@@ -178,7 +209,7 @@ const MatchLobby = () => {
             nfts={player1NFTs ? player1NFTs : []}
             isLockedIn={isPlayer1LockedIn}
             setIsLockedIn={setPlayer1Bargain}
-            setNFTs={setPlayer1NFTs}
+            setNFTs={setPlayer1NewNFT}
           />
         </div>
         <div
@@ -192,7 +223,7 @@ const MatchLobby = () => {
             nfts={player2NFTs ? player2NFTs : []}
             isLockedIn={isPlayer2LockedIn}
             setIsLockedIn={setPlayer2Bargain}
-            setNFTs={setPlayer2NFTs}
+            setNFTs={setPlayer2NewNFT}
           />
         </div>
       </div>
