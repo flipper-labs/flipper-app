@@ -36,7 +36,7 @@ const CreateMatch: NextPage = () => {
     return () => {
       socket.off("match:create", onMatchCreate);
     };
-  }, [address]);
+  }, [address, nftContract]);
 
   useEffect(() => {
     matchId && router.push(`/match/${matchId}`);
