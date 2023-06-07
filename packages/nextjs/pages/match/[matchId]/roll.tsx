@@ -8,7 +8,7 @@ import { Chat } from "~~/components/Chat";
 import { PlayerInMatch } from "~~/components/PlayerInMatch";
 import { CoinFlip } from "~~/components/animations/CoinFlip";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
-import { useScaffoldContract, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 import { Match, Player, StakePayload, matchFromLog } from "~~/models/match";
 import { socket } from "~~/services/socket";
 import { notification } from "~~/utils/scaffold-eth";
@@ -48,9 +48,11 @@ const Roll = () => {
 
   useEffect(() => {
     socket.on("match:stake", onStake);
+    socket.on("match:start", onStart)
 
     return () => {
       socket.off("match:stake");
+      socket.off("match:start")
     };
   }, [match]);
 
@@ -63,6 +65,15 @@ const Roll = () => {
       setPlayer1Staked(true);
     } else if (match.player2.wallet === payload.playerWallet) {
       setPlayer2Staked(true);
+    }
+  };
+
+  const onStart = (payload: Match) => {
+    if (!match) return;
+
+    if (match.id === payload.id) {
+      console.log("Match is starting!");
+      handleFlipStart();
     }
   };
 
@@ -112,19 +123,23 @@ const Roll = () => {
     }
   };
 
-  const { writeAsync: startMatchAsync, isLoading } = useScaffoldContractWrite({
+  useScaffoldEventSubscriber({
     contractName: "Flipper",
-    functionName: "startMatch",
-    args: [matchId as string],
-    value: "0",
-    onBlockConfirmation: async txnReceipt => {
+    eventName: "MatchCompleted",
+    listener: async (player1, player2, id) => {
       const finishedMatchRaw = await flipper?.matches(matchId);
       const convertedMatch = await matchFromLog(matchId as string, finishedMatchRaw, flipper, nftContract);
 
-      if (convertedMatch.winner === convertedMatch.player1.wallet) {
+      console.log("CONVERTED MATCH")
+      console.log(convertedMatch)
+      console.log("CURR USER:")
+      console.log(currentUser)
+      if (convertedMatch.winner === currentUser) {
         handleLogoFlips();
+        console.log("WINNNING FLIP")
         notification.info(convertedMatch.winner + " has won!");
-      } else if (convertedMatch.winner === convertedMatch.player2.wallet) {
+      } else if (convertedMatch.winner !== currentUser) {
+        console.log("LOOOOSING FLIP")
         handleEmptyFlips();
         notification.info(convertedMatch.winner + " has won!");
       }
@@ -135,10 +150,19 @@ const Roll = () => {
     },
   });
 
+  const { writeAsync: startMatchAsync, isLoading } = useScaffoldContractWrite({
+    contractName: "Flipper",
+    functionName: "startMatch",
+    args: [matchId as string],
+    value: "0",
+    onBlockConfirmation: async txnReceipt => {
+      
+    },
+  });
+
   const startMatch = async () => {
     try {
-      handleFlipStart();
-
+      socket.emit("match:start", {matchID: match.id});
       await startMatchAsync();
     } catch (err: any) {
       notification.error(err.message);
