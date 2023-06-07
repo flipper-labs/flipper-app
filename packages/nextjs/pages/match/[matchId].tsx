@@ -161,30 +161,18 @@ const MatchLobby = () => {
     };
   }, [matchId, nftContract]);
 
-  useEffect(() => {
-    console.log("test")
-  }, [player1NFTs]);
-
-  // useEffect(() => {
-  //   if (!player2NFTs) return;
-
-  //   const newMatch = { ...match };
-  //   newMatch.player2.nfts = [...player2NFTs];
-  //   setMatch(newMatch);
-  // }, [player2NFTs]);
-
   const createMatch = async () => {
     const res = await flipper?.createMatch(matchId as string, {
       timestamp: BigNumber.from(0),
       player1: match.player1?.wallet,
-      player1Stake: match.player1?.nfts
-        ? match.player1.nfts?.map((nft: NFT) => {
+      player1Stake: player1NFTs
+        ? player1NFTs?.map((nft: NFT) => {
             return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
           })
         : [],
       player2: match.player2?.wallet,
-      player2Stake: match.player2.nfts
-        ? match.player2.nfts?.map((nft: NFT) => {
+      player2Stake: player2NFTs
+        ? player2NFTs?.map((nft: NFT) => {
             return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
           })
         : [],
