@@ -2,7 +2,16 @@ import { GameMode, MatchStatus } from "./enums";
 import { NFT, getPlayerStake } from "./nfts";
 import { Contract } from "ethers";
 
-export const matchFromLog = async (id: string, args: any, flipper: Contract | null, provider: any): Promise<Match> => {
+export const matchFromLog = async (
+  id: string,
+  args: any,
+  flipper: Contract | null,
+  nftContract: Contract | null,
+): Promise<Match> => {
+  if (!args.player1) {
+    return {} as Match;
+  }
+
   const match: Match = {
     id: id,
     timestamp: args.timestamp.toNumber(),
@@ -17,12 +26,24 @@ export const matchFromLog = async (id: string, args: any, flipper: Contract | nu
     isSettled: args.isSettled,
   };
 
-  if (flipper) {
-    match.player1.nfts = await getPlayerStake(flipper as Contract, match.player1.wallet, id, provider);
-    match.player2.nfts = await getPlayerStake(flipper as Contract, match.player2.wallet, id, provider);
+  if (flipper && nftContract) {
+    match.player1.wallet
+      ? (match.player1.nfts = await getPlayerStake(
+          flipper as Contract,
+          nftContract as Contract,
+          match.player1.wallet,
+          id,
+        ))
+      : "";
+    match.player2.wallet
+      ? (match.player2.nfts = await getPlayerStake(
+          flipper as Contract,
+          nftContract as Contract,
+          match.player2.wallet,
+          id,
+        ))
+      : "";
   }
-
-  console.log(match);
 
   return match;
 };
@@ -48,6 +69,10 @@ export interface BargainResponse {
   match: Match;
   player: Player;
   isLockedIn: boolean;
+}
+
+export interface StakePayload {
+  playerWallet: string;
 }
 
 export interface Player {

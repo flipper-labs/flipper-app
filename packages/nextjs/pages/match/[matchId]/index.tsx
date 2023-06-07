@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { PlayerNFTs } from "./../../components/PlayerNFTs";
-import { httpServerURL } from "./../../services/socket";
-import { socket } from "./../../services/socket";
+import { PlayerNFTs } from "../../../components/PlayerNFTs";
+import { httpServerURL, socket } from "./../../../services/socket";
 import { BigNumber, Contract, Signer, constants } from "ethers";
 import { useAccount, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
@@ -160,32 +159,51 @@ const MatchLobby = () => {
     })();
 
     socket.on("match:join", onJoin);
+    socket.on("match:moveToRoll", onMoveToRoll);
 
     return () => {
       socket.off("match:join");
+      socket.off("match:moveToRoll");
     };
   }, [matchId, nftContract]);
 
+  const onMoveToRoll = () => {
+    notification.info("🎉 The match has been created!");
+    setTimeout(() => {
+      router.push(`/match/${matchId}/roll`);
+    }, 3000);
+  };
+
   const createMatch = async () => {
-    const res = await flipper?.createMatch(matchId as string, {
-      timestamp: BigNumber.from(0),
-      player1: match.player1?.wallet,
-      player1Stake: player1NFTs
-        ? player1NFTs?.map((nft: NFT) => {
-            return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
-          })
-        : [],
-      player2: match.player2?.wallet,
-      player2Stake: player2NFTs
-        ? player2NFTs?.map((nft: NFT) => {
-            return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
-          })
-        : [],
-      gamemode: match.gamemode,
-      winner: constants.AddressZero,
-      isSettled: false,
-    });
-    console.log(res);
+    try {
+      const res = await flipper?.createMatch(matchId as string, {
+        timestamp: BigNumber.from(0),
+        player1: match.player1?.wallet,
+        player1Stake: player1NFTs
+          ? player1NFTs
+              ?.filter((nft: NFT) => nft.selected)
+              .map((nft: NFT) => {
+                return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
+              })
+          : [],
+        player2: match.player2?.wallet,
+        player2Stake: player2NFTs
+          ? player2NFTs
+              ?.filter((nft: NFT) => nft.selected)
+              .map((nft: NFT) => {
+                return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
+              })
+          : [],
+        gamemode: match.gamemode,
+        winner: constants.AddressZero,
+        isSettled: false,
+      });
+      if (res) {
+        socket.emit("match:moveToRoll", { from: currentUser, matchID: matchId });
+      }
+    } catch (err: any) {
+      notification.error(`An error occurred: ${err.message}`);
+    }
   };
 
   return (
@@ -239,7 +257,7 @@ const MatchLobby = () => {
       </div>
       <div style={{ height: "30vh" }} className="flex h-full w-full px-10 py-5 h-100 gap-10">
         <div className="w-full">
-          <Chat address={currentUser} matchID={matchId} />
+          <Chat address={currentUser ? currentUser : ""} matchID={matchId ? (matchId as string) : ""} />
         </div>
       </div>
     </div>

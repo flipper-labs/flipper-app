@@ -89,12 +89,48 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     "safeMint",
     "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015", // 0
   );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015", // 1
+  );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015", // 2
+  );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015", // 3
+  );
 
   await execute(
     "MockERC721",
     { from: deployer, log: true, autoMine: true },
     "safeMint",
-    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 1
+    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 4
+  );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 5
+  );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 6
+  );
+  await execute(
+    "MockERC721",
+    { from: deployer, log: true, autoMine: true },
+    "safeMint",
+    "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB", // 7
   );
 
   await execute(

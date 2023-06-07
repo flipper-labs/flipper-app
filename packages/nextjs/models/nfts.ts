@@ -9,13 +9,11 @@ export interface NFT {
   selected?: boolean;
 }
 
-const contracts = new Map<string, Contract>();
-
 export const getPlayerStake = async (
   flipper: Contract,
+  nftContract: Contract,
   player: string,
   matchId: string,
-  provider: any,
 ): Promise<NFT[]> => {
   let stakeResponse = await flipper.getPlayerStake(player, matchId);
 
@@ -26,18 +24,8 @@ export const getPlayerStake = async (
       tokenId: stakeResponse[i].id?.toNumber() as number,
     };
 
-    // Get image of the NFT
-    if (!contracts.has(nft.contract)) {
-      const contract: Contract = new Contract(
-        nft.contract,
-        deployedContracts[31337][0].contracts.MockERC721.abi,
-        provider,
-      ); // TODO: change 31337 to chainId
-      contracts.set(nft.contract, contract);
-    }
-
     try {
-      nft.image = await getNFTImage(contracts.get(nft.contract) as Contract, BigNumber.from(nft.tokenId));
+      nft.image = await getNFTImage(nftContract, BigNumber.from(nft.tokenId));
     } catch (err) {
       console.error("Error fetching NFT's image: ", err);
     }

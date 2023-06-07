@@ -1,9 +1,16 @@
+import { NFTGrid } from "./NFTGrid";
 import { randomInt } from "crypto";
 import Jazzicon from "react-jazzicon/dist/Jazzicon";
 import { useAccount } from "wagmi";
+import { Player } from "~~/models/match";
 import { shortenAddress } from "~~/utils/flipper";
 
-export const PlayerInMatch = ({ address, coin_image }: { address: string; coin_image: string }) => {
+export interface PlayerInMatchProps {
+  player: Player;
+  coin_image: string;
+}
+
+export const PlayerInMatch = ({ player, coin_image }: PlayerInMatchProps) => {
   const { address: currentPlayer } = useAccount();
 
   const jsNumberForAddress = (address: string): number => {
@@ -18,12 +25,15 @@ export const PlayerInMatch = ({ address, coin_image }: { address: string; coin_i
   const imageUrl = `/${coin_image}`;
 
   return (
-    <div className="flex flex-col pt-10 justify-center items-center">
-      <div className="flex flex-col justify-center items-center gap-4">
-        <Jazzicon diameter={32} seed={jsNumberForAddress(address)} />
-        <div className="text-lg">{address === currentPlayer ? "You" : shortenAddress(address)}</div>
-        <img src={imageUrl} className="w-12" />
+    player && (
+      <div className="flex flex-col pt-10 justify-center items-center">
+        <div className="flex flex-col justify-center items-center gap-4">
+          <Jazzicon diameter={32} seed={jsNumberForAddress(player?.wallet)} />
+          <div className="text-lg">{player?.wallet === currentPlayer ? "You" : shortenAddress(player?.wallet)}</div>
+          <img src={imageUrl} className="w-12" />
+        </div>
+        <NFTGrid player={player.wallet} nfts={player?.nfts ? player.nfts : []} setNfts={() => 0} isLockedIn={true} />
       </div>
-    </div>
+    )
   );
 };
