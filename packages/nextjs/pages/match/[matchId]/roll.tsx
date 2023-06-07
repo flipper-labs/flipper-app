@@ -130,16 +130,10 @@ const Roll = () => {
       const finishedMatchRaw = await flipper?.matches(matchId);
       const convertedMatch = await matchFromLog(matchId as string, finishedMatchRaw, flipper, nftContract);
 
-      console.log("CONVERTED MATCH")
-      console.log(convertedMatch)
-      console.log("CURR USER:")
-      console.log(currentUser)
       if (convertedMatch.winner === currentUser) {
         handleLogoFlips();
-        console.log("WINNNING FLIP")
         notification.info(convertedMatch.winner + " has won!");
       } else if (convertedMatch.winner !== currentUser) {
-        console.log("LOOOOSING FLIP")
         handleEmptyFlips();
         notification.info(convertedMatch.winner + " has won!");
       }
@@ -155,9 +149,7 @@ const Roll = () => {
     functionName: "startMatch",
     args: [matchId as string],
     value: "0",
-    onBlockConfirmation: async txnReceipt => {
-      
-    },
+    onBlockConfirmation: async txnReceipt => {},
   });
 
   const startMatch = async () => {
