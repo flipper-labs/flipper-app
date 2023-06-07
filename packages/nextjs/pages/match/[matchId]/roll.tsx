@@ -66,16 +66,6 @@ const Roll = () => {
     }
   };
 
-  const { writeAsync: startMatch, isLoading } = useScaffoldContractWrite({
-    contractName: "Flipper",
-    functionName: "startMatch",
-    args: [matchId as string],
-    value: "0",
-    onBlockConfirmation: (txnReceipt: any) => {
-      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
-    },
-  });
-
   const handleFlipStart = () => {
     if (coinStateRef.current == 0) {
       coinStateRef.current = 1;
@@ -124,15 +114,15 @@ const Roll = () => {
     }
   };
 
-  //   const startMatch = async () => {
-  //     console.log("start");
+  const startMatch = async () => {
+    console.log("start");
 
-  //     try {
-  //       await flipper?.startMatch(matchId);
-  //     } catch (err: any) {
-  //       notification.error(err.message);
-  //     }
-  //   };
+    try {
+      await flipper?.startMatch(matchId);
+    } catch (err: any) {
+      notification.error(err.message);
+    }
+  };
 
   return (
     <div className="flex items-center flex-col pt-10 w-full h-full">

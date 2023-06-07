@@ -7,7 +7,7 @@ import { useAccount, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
 import { ActionButton } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
-import { Bargain, Match } from "~~/models/match";
+import { Bargain, BargainResponse, Match } from "~~/models/match";
 import { NFT, getUserNFTs } from "~~/models/nfts";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -44,14 +44,14 @@ const MatchLobby = () => {
   }
 
   useEffect(() => {
-    function onBargain(payload: Bargain) {
+    function onBargain(payload: BargainResponse) {
       if (match.player2.wallet === payload.player.wallet) {
-        setPlayer2IsLockedIn(payload.locked);
+        setPlayer2IsLockedIn(payload.isLockedIn);
         setPlayer2NFTs(payload.player.nfts ? payload.player.nfts : []);
       }
 
       if (match.player1.wallet === payload.player.wallet) {
-        setPlayer1IsLockedIn(payload.locked);
+        setPlayer1IsLockedIn(payload.isLockedIn);
         setPlayer1NFTs(payload.player.nfts ? payload.player.nfts : []);
       }
     }
@@ -65,7 +65,7 @@ const MatchLobby = () => {
 
   function setPlayer1Bargain() {
     socket.emit("match:bargain", {
-      locked: !isPlayer1LockedIn,
+      isLockedIn: !isPlayer1LockedIn,
       player: {
         wallet: match.player1.wallet,
         nfts: player1NFTs,
@@ -76,7 +76,7 @@ const MatchLobby = () => {
 
   function setPlayer2Bargain() {
     socket.emit("match:bargain", {
-      locked: !isPlayer2LockedIn,
+      isLockedIn: !isPlayer2LockedIn,
       player: {
         wallet: match.player2.wallet,
         nfts: player2NFTs,
@@ -88,7 +88,7 @@ const MatchLobby = () => {
   function setPlayer1NewNFT(nfts: any) {
     setPlayer1NFTs(nfts);
     socket.emit("match:bargain", {
-      locked: isPlayer1LockedIn,
+      isLockedIn: isPlayer1LockedIn,
       player: {
         wallet: match.player1.wallet,
         nfts: nfts,
@@ -100,7 +100,7 @@ const MatchLobby = () => {
   function setPlayer2NewNFT(nfts: any) {
     setPlayer2NFTs(nfts);
     socket.emit("match:bargain", {
-      locked: isPlayer2LockedIn,
+      isLockedIn: isPlayer2LockedIn,
       player: {
         wallet: match.player2.wallet,
         nfts: nfts,

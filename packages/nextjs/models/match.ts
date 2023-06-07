@@ -62,7 +62,7 @@ export interface Match {
 export interface Bargain {
   readonly matchID: string;
   player: Player;
-  locked: boolean;
+  isLockedIn: boolean;
 }
 
 export interface BargainResponse {
