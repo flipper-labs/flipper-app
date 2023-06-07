@@ -115,10 +115,12 @@ const Roll = () => {
   };
 
   const startMatch = async () => {
-    console.log("start");
+    console.log(flipper);
+    console.log(matchId);
 
     try {
-      await flipper?.startMatch(matchId);
+      const res = await flipper?.startMatch(`${matchId}`);
+      console.log(res);
     } catch (err: any) {
       notification.error(err.message);
     }
@@ -150,7 +152,7 @@ const Roll = () => {
         </div>
         <div className="w-1/4 py-2 backdrop-blur bg-opacity-50 border border-purple-500 rounded-lg flex flex-col items-center justify-center">
           <PlayerInMatch player={match.player2} coin_image="coin-back.svg" />
-          {match && match.player2 && currentUser == match.player2.wallet && (
+          {match && match.player2 && currentUser == match.player2.wallet && !player2Staked && (
             <ActionButton
               onClick={async () => await lockTokens(match.player2)}
               action="Lock NFTs"

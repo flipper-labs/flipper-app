@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@chainlink/contracts/src/v0.8/VRFV2WrapperConsumerBase.sol";
 
-contract Flipper is Ownable, IERC721Receiver {
+contract FlipperVRF is Ownable, IERC721Receiver, VRFV2WrapperConsumerBase {
     event MatchCreated(address indexed player1, address indexed player2, string id);
     event MatchCompleted(address indexed player1, address indexed player2, string id);
 
@@ -27,10 +27,15 @@ contract Flipper is Ownable, IERC721Receiver {
     }
 
     mapping(string => Match) public matches;
+    mapping(uint256 => string) public randomnessRequestsRequestToMatch;
+    mapping(string => uint256) public randomnessRequestsMatchToRequest;
+    mapping(string => uint256[]) public matchesRandomness;
 
     uint256 private matchStartWindow; // Window of time for players to start the match. If this time passes, users are able to claim their locked NFTs and match cannot be started.
+    uint32 private callbackGasLimit;
 
-    constructor(uint256 _matchStartWindow) {
+    constructor(address _link, address _vrfV2Wrapper, uint32 _callbackGasLimit, uint256 _matchStartWindow) VRFV2WrapperConsumerBase(_link, _vrfV2Wrapper) {
+        callbackGasLimit = _callbackGasLimit;
         matchStartWindow = _matchStartWindow;
     }
 
@@ -73,7 +78,7 @@ contract Flipper is Ownable, IERC721Receiver {
      * @dev Allows players to start the match. Match can be started only by the players themselves and if they both locked tokens they agreed upon.
      */
     function startMatch(string calldata matchId) external {
-        Match storage _match = matches[matchId];
+        Match memory _match = matches[matchId];
 
         require(!_match.isSettled, "startMatch: the match has already been settled.");
         require(msg.sender == _match.player1 || msg.sender == _match.player2, "startMatch: only players can start the match.");
@@ -81,7 +86,44 @@ contract Flipper is Ownable, IERC721Receiver {
         require(_checkTokensOwner(address(this), _match.player1Stake), "startMatch: contract is not the owner of tokens that player 1 should've staked.");
         require(_checkTokensOwner(address(this), _match.player2Stake), "startMatch: contract is not the owner of tokens that player 2 should've staked.");
 
-        if(block.number % 2 == 0) {
+        // Reach out to VRF contract
+        uint256 requestId = requestRandomness(callbackGasLimit, 3, 1); // TODO: Modify last param (_numWords) based on the gamemode 
+
+        // Maps VRF request to a match, so that it can be identified in the VRF callback.
+        randomnessRequestsRequestToMatch[requestId] = matchId;
+        randomnessRequestsMatchToRequest[matchId] = requestId;
+    }
+
+    /**
+     * @dev Receives random numbers from Chainlink's VRF V2.
+     * 
+     * Note/TODO: This is VRF V2 using "direct funding" method. Perhaps we want to go with a "subscription" method,
+     * so we can fund an account we specify on the Chainlink's website, instead of funding the contract directly.
+     */
+    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+        string memory matchId = randomnessRequestsRequestToMatch[requestId];
+        Match storage _match = matches[matchId];
+
+        matchesRandomness[matchId] = randomWords; // store randomness results, maybe it will be needed for on-chain proofs
+
+        delete randomnessRequestsMatchToRequest[matchId];
+        delete randomnessRequestsRequestToMatch[requestId];
+
+        completeMatch(matchId, _match);
+    }
+
+    /**
+     * @dev Completes a match and triggers match prize settlement.
+     *
+     * Emits a {MatchCompleted} event.
+     */
+    function completeMatch(string memory matchId, Match storage _match) internal {
+        require(matchesRandomness[matchId].length > 0, "completeMatch: no random number has been returned.");
+
+        uint256 randomNumber = matchesRandomness[matchId][0];
+
+        // TODO: Perhaps extract determination logic and make it more modular/extensible with proxies.
+        if(randomNumber % 2 == 0) {
             _match.winner = _match.player1;
         }else{
             _match.winner = _match.player2;
@@ -157,6 +199,10 @@ contract Flipper is Ownable, IERC721Receiver {
 
     function setMatchStartWindow(uint256 _window) external onlyOwner {
         matchStartWindow = _window;
+    }
+
+    function setCallbackGasLimit(uint32 _limit) external onlyOwner {
+        callbackGasLimit = _limit;
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
