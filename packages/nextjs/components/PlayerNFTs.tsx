@@ -38,7 +38,7 @@ export const PlayerNFTs = ({
         {isLockedIn ? <Lock /> : <Unlock />}
         {player === currentUser ? "You" : player === "" ? "Waiting for an opponent..." : shortenAddress(player)}
       </div>
-      <div className="scrollable-div hide-scroll h-full grid grid-cols-4 gap-4" style={{ height: "40vh" }}>
+      <div style={{ height: "40vh" }}>
         <NFTGrid player={player} isLockedIn={isLockedIn} nfts={nfts} setNfts={setNFTs} />
       </div>
       {isLockedIn
