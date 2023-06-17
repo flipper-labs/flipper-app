@@ -9,6 +9,7 @@ module.exports = {
       {
         scaffoldEth: {
           primary: "#93BBFB",
+          "dark-flipper-gray": "#1E1E1E",
           "primary-content": "#212638",
           secondary: "#DAE8FF",
           "secondary-content": "#212638",
@@ -95,7 +96,7 @@ module.exports = {
       },
       fontSize: {
         header: "30px",
-        big: "50px"
+        big: "50px",
       },
       keyframes: {
         grow: {

@@ -2,13 +2,24 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@font-face {
+  font-family: "Magistral";
+  src: url("../public/fonts/Magistral-Regular.otf");
+  src: url("../public/fonts/Magistral-Black.otf");
+  src: url("../public/fonts/Magistral-Bold.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root,
 [data-theme] {
-  background: hsl(var(--b2));
+  background-color: #1e1e1e;
 }
 
 body {
   min-height: 100vh;
+  font-family: Magistral, sans-serif;
+  font-weight: 400;
 }
 
 h1,
@@ -66,8 +77,8 @@ p {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scroll {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .chat-head-color {
@@ -75,9 +86,9 @@ p {
 }
 
 .chat-body-color {
-  background-color: #1A1A1A;
+  background-color: #1a1a1a;
 }
 
 .chat-button-color {
-  background-color: #650BBF;
+  background-color: #650bbf;
 }
