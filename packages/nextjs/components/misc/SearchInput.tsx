@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SearchIcon from "./../public/svgs/search.svg";
+import SearchIcon from "./../../public/svgs/search.svg";
 
 export const SearchInput = (props: any) => {
   const [inputValue, setInputValue] = useState("");
@@ -9,10 +9,7 @@ export const SearchInput = (props: any) => {
   };
 
   const handleBlur = () => {
-    // Function to be called when the component loses focus
-    console.log("Component blurred");
     props.setNameFilter(inputValue);
-    // Perform any actions when the component loses focus here
   };
 
   return (

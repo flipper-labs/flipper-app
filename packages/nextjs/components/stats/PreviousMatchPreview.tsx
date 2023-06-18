@@ -1,7 +1,7 @@
-import { WinLoss } from "../misc/buttons/WinLoss";
+import { StatusButton } from "../misc/buttons/StatusButton";
 import { MatchPreviewUser } from "./../start/MatchPreviewUser";
+import { MatchStatus } from "~~/models/enums";
 import { Match } from "~~/models/match";
-import { shortenAddress } from "~~/utils/flipper";
 
 export interface MatchPreviewProps {
   player: string;
@@ -9,6 +9,8 @@ export interface MatchPreviewProps {
 }
 
 export const PreviousMatchPreview = ({ match, player }: MatchPreviewProps) => {
+  const isWinner = match.winner === player;
+
   return (
     <div
       className={`box-border w-4/5 py-4 px-8 gap-18 
@@ -19,7 +21,11 @@ export const PreviousMatchPreview = ({ match, player }: MatchPreviewProps) => {
       <MatchPreviewUser address={match.player1.wallet} stake={match.player1.nfts ? match.player1.nfts.length : 0} />
       <div className="text-lg">VS</div>
       <MatchPreviewUser address={match.player2.wallet} stake={match.player2.nfts ? match.player2.nfts.length : 0} />
-      <WinLoss winner={match.winner} player={player} />
+      <StatusButton
+        status={match.isSettled ? MatchStatus.Completed : MatchStatus.Live}
+        player={player}
+        winner={match.winner}
+      />
     </div>
   );
 };

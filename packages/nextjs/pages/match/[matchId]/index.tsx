@@ -5,7 +5,7 @@ import { httpServerURL, socket } from "./../../../services/socket";
 import { BigNumber, Contract, Signer, constants } from "ethers";
 import { useAccount, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
-import { ActionButton } from "~~/components/misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { Bargain, BargainResponse, Match } from "~~/models/match";
 import { NFT, getUserNFTs } from "~~/models/nfts";
@@ -117,6 +117,7 @@ const MatchLobby = () => {
           "Content-Type": "application/json",
         },
       });
+      console.log(response);
       const match: Match = await response.json();
       setMatch(match);
 
@@ -175,28 +176,31 @@ const MatchLobby = () => {
   const { writeAsync: createMatchAsync, isLoading } = useScaffoldContractWrite({
     contractName: "Flipper",
     functionName: "createMatch",
-    args: [matchId as string, {
-      timestamp: BigNumber.from(0),
-      player1: match.player1?.wallet,
-      player1Stake: player1NFTs
-        ? player1NFTs
-            ?.filter((nft: NFT) => nft.selected)
-            .map((nft: NFT) => {
-              return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
-            })
-        : [],
-      player2: match.player2?.wallet,
-      player2Stake: player2NFTs
-        ? player2NFTs
-            ?.filter((nft: NFT) => nft.selected)
-            .map((nft: NFT) => {
-              return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
-            })
-        : [],
-      gamemode: match.gamemode,
-      winner: constants.AddressZero,
-      isSettled: false,
-    }],
+    args: [
+      matchId as string,
+      {
+        timestamp: BigNumber.from(0),
+        player1: match.player1?.wallet,
+        player1Stake: player1NFTs
+          ? player1NFTs
+              ?.filter((nft: NFT) => nft.selected)
+              .map((nft: NFT) => {
+                return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
+              })
+          : [],
+        player2: match.player2?.wallet,
+        player2Stake: player2NFTs
+          ? player2NFTs
+              ?.filter((nft: NFT) => nft.selected)
+              .map((nft: NFT) => {
+                return { contractAddress: nft.contract, id: BigNumber.from(nft.tokenId) };
+              })
+          : [],
+        gamemode: match.gamemode,
+        winner: constants.AddressZero,
+        isSettled: false,
+      },
+    ],
     value: "0",
     onBlockConfirmation: async txnReceipt => {
       socket.emit("match:moveToRoll", { from: currentUser, matchID: matchId });
@@ -204,7 +208,7 @@ const MatchLobby = () => {
   });
 
   const createMatch = async () => {
-      await await createMatchAsync();
+    await await createMatchAsync();
   };
 
   return (
@@ -243,7 +247,7 @@ const MatchLobby = () => {
         {isPlayer1LockedIn && isPlayer2LockedIn ? (
           <div className="w-1/6">
             <ActionButton
-              action="Create Match"
+              action={ActionType.CreateMatch}
               color="white"
               iconToRight={false}
               background="#F050F2"

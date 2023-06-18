@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import FilterIcon from "./../public/svgs/filter.svg";
+import FilterIcon from "./../../public/svgs/filter.svg";
 import { RadioGroup } from "./RadioGroup";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";

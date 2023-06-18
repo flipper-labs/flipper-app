@@ -62,21 +62,26 @@ const Home: NextPage = () => {
 
     function onMatchJoin(match: any) {
       if (match.player2.wallet === address) {
-        console.log("Joining match with id: " + match.id);
         router.push(`match/${match.id}`);
       }
+    }
+
+    function onMatchSpectate(payload: any) {
+      router.push(`match/${payload.matchID}`);
     }
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("match:create", onMatchCreate);
     socket.on("match:join", onMatchJoin);
+    socket.on("match:spectate", onMatchSpectate);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("match:create", onMatchCreate);
       socket.off("match:join", onMatchJoin);
+      socket.off("match:spectate", onMatchSpectate);
     };
   }, [address, router]);
 
@@ -144,7 +149,7 @@ const Home: NextPage = () => {
           style={{ height: "45vh" }}
         >
           {matches.length > 0 ? (
-            matches.map((item, index) => <MatchPreview key={index} match={item} />)
+            matches.map((item, index) => <MatchPreview key={index} match={item} player={address as string} />)
           ) : (
             <div className="flex flex-col gap-3 justify-center items-center">
               <p className="text-xl">Available matches will appear here.</p>

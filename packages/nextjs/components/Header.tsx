@@ -19,12 +19,16 @@ export const Header = () => {
 
   const navLinks = (
     <>
-      <li>
-        <div className="flex flex-row gap-2 align-center justify-center px-8 py-2 rounded-lg bg-violet-900">
-          <Stats stroke="#fff" />
-          {address ? <Link href={`/stats/${address}`}>Stats</Link> : ""}
-        </div>
-      </li>
+      {address ? (
+        <li>
+          <div className="flex flex-row gap-2 align-center justify-center px-8 py-2 rounded-lg bg-violet-900">
+            <Stats stroke="#fff" />
+            {address ? <Link href={`/stats/${address}`}>Stats</Link> : ""}
+          </div>
+        </li>
+      ) : (
+        ""
+      )}
     </>
   );
 

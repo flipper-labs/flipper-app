@@ -26,7 +26,7 @@ export const NFTGrid = ({ player, nfts, setNfts, isLockedIn }: NFTGridProps) => 
       {nfts.map((nft: any, i: any) => (
         <div onClick={() => handleClick(i)} className="m-4" key={i}>
           <div className="w-20" style={{ border: nft.selected ? "5px purple solid" : "none" }}>
-            <img src={nft.image} alt="image loading"></img>
+            <img src={nft.image} alt=""></img>
           </div>
         </div>
       ))}

@@ -1,5 +1,5 @@
-import { DropdownMenu } from "../DropdownMenu";
-import { SearchInput } from "../SearchInput";
+import { DropdownMenu } from "../misc/DropdownMenu";
+import { SearchInput } from "../misc/SearchInput";
 import { ActionButton, ActionType } from "../misc/buttons/ActionButton";
 
 export const MatchActions = (props: any) => {

@@ -1,7 +1,7 @@
 import Lock from "./../public/svgs/lock.svg";
 import Unlock from "./../public/svgs/unlock.svg";
 import { NFTGrid } from "./NFTGrid";
-import { ActionButton } from "./misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "./misc/buttons/ActionButton";
 import { useAccount } from "wagmi";
 import { NFT } from "~~/models/nfts";
 import { shortenAddress } from "~~/utils/flipper";
@@ -45,7 +45,7 @@ export const PlayerNFTs = ({
         ? player === currentUser && (
             <ActionButton
               onClick={() => setIsLockedIn(false)}
-              action="Unlock"
+              action={ActionType.Unlock}
               color="white"
               iconToRight={false}
               background="#F050F2"
@@ -56,7 +56,7 @@ export const PlayerNFTs = ({
         : player === currentUser && (
             <ActionButton
               onClick={() => setIsLockedIn(true)}
-              action="Lock In"
+              action={ActionType.Lock}
               color="white"
               iconToRight={false}
               background="#F050F2"
