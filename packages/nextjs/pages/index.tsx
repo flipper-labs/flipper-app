@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { httpServerURL, socket } from "../services/socket";
 import type { NextPage } from "next";
@@ -62,21 +62,26 @@ const Home: NextPage = () => {
 
     function onMatchJoin(match: any) {
       if (match.player2.wallet === address) {
-        console.log("Joining match with id: " + match.id);
         router.push(`match/${match.id}`);
       }
+    }
+
+    function onMatchSpectate(payload: any) {
+      router.push(`match/${payload.matchID}`);
     }
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("match:create", onMatchCreate);
     socket.on("match:join", onMatchJoin);
+    socket.on("match:spectate", onMatchSpectate);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("match:create", onMatchCreate);
       socket.off("match:join", onMatchJoin);
+      socket.off("match:spectate", onMatchSpectate);
     };
   }, [address, router]);
 
@@ -129,11 +134,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Flipper</title>
-        <meta name="description" content="Gamble your NFTs" />
-      </Head>
-
       <div className="flex items-center flex-col pt-10 gap-4 w-full h-full">
         <Cover address={address} />
         <MatchActions
@@ -148,9 +148,16 @@ const Home: NextPage = () => {
           className="flex w-full space-y-4 items-center scrollable-div hide-scroll h-full"
           style={{ height: "45vh" }}
         >
-          {matches.map((item, index) => (
-            <MatchPreview key={index} match={item} />
-          ))}
+          {matches.length > 0 ? (
+            matches.map((item, index) => <MatchPreview key={index} match={item} player={address as string} />)
+          ) : (
+            <div className="flex flex-col gap-3 justify-center items-center">
+              <p className="text-xl">Available matches will appear here.</p>
+              <div className="flex relative w-[10rem] h-[10rem]">
+                <Image alt="No matches available" fill src="/walking-man.png" />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

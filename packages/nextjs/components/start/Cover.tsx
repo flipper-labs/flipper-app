@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ActionButton } from "../misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "../misc/buttons/ActionButton";
 
 export const Cover = (props: any) => {
   return (
@@ -15,28 +15,28 @@ export const Cover = (props: any) => {
           alt="cover"
         />
       </div>
-      { props.address &&
-      <div className="flex flex-col justify-around">
-        <Link href="/match/create">
+      {props.address && (
+        <div className="flex flex-col justify-around">
+          <Link href="/match/create">
+            <ActionButton
+              action={ActionType.CreateMatch}
+              color="white"
+              iconToRight={false}
+              background="#F050F2"
+              paddingX={3}
+              paddingY={1}
+            />
+          </Link>
           <ActionButton
-            action="Create Match"
-            color="white"
+            action={ActionType.InviteFriends}
+            color="#F050F2"
             iconToRight={false}
-            background="#F050F2"
+            border="#F050F2"
             paddingX={3}
             paddingY={1}
           />
-        </Link>
-        <ActionButton
-          action="Invite Friend"
-          color="#F050F2"
-          iconToRight={false}
-          border="#F050F2"
-          paddingX={3}
-          paddingY={1}
-        />
-      </div>
-      }
+        </div>
+      )}
     </div>
   );
 };

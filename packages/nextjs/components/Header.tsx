@@ -2,11 +2,14 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Stats from "./../public/svgs/profile.svg";
+import { useAccount } from "wagmi";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 export const Header = () => {
+  const { address } = useAccount();
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
   useOutsideClick(
@@ -16,12 +19,16 @@ export const Header = () => {
 
   const navLinks = (
     <>
-      <li>
-        <div className="flex flex-row gap-2 align-center justify-center px-8 py-2 rounded-lg bg-violet-900">
-          <Stats stroke="#fff" />
-          <Link href="/stats">Stats</Link>
-        </div>
-      </li>
+      {address ? (
+        <li>
+          <div className="flex flex-row gap-2 align-center justify-center px-8 py-2 rounded-lg bg-violet-900">
+            <Stats stroke="#fff" />
+            {address ? <Link href={`/stats/${address}`}>Stats</Link> : ""}
+          </div>
+        </li>
+      ) : (
+        ""
+      )}
     </>
   );
 

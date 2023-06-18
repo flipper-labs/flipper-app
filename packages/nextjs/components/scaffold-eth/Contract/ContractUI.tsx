@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Abi } from "abitype";
 import { useContract, useProvider } from "wagmi";
-import { Spinner } from "~~/components/Spinner";
+import { Spinner } from "~~/components/misc/Spinner";
 import {
   Address,
   Balance,

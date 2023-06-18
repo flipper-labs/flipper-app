@@ -43,14 +43,14 @@ export const StatsHeader = ({ address, matches }: StatsHeaderProps) => {
       <div className="text-3xl font-bold">{shortenAddress(address)}</div>
       <div className="flex flex-row gap-[15rem] justify-between items-center">
         <div className="flex flex-row justify-center items-center gap-3">
-          <WinIcon stroke="white" width={64} height={64} />
+          <WinIcon stroke="#F050F2" width={64} height={64} />
           <div className="flex flex-col justify-center items-start">
             <div className="text-2xl font-light">{wins} Wins</div>
             <div className="text-lg font-extralight">{calculatePercentage(wins, total)}%</div>
           </div>
         </div>
         <div className="flex flex-row justify-center items-center gap-3">
-          <LossIcon stroke="white" width={64} height={64} />
+          <LossIcon stroke="#ED4F4F" width={64} height={64} />
           <div className="flex flex-col justify-center items-start">
             <div className="text-2xl font-light">{losses} Losses</div>
             <div className="text-lg font-extralight">{calculatePercentage(losses, total)}%</div>

@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import { useLocalStorage } from "usehooks-ts";
+import { Footer } from "~~/components/Footer";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
@@ -59,6 +60,8 @@ const Debug: NextPage = () => {
             packages / nextjs / pages / debug.tsx
           </code>{" "}
         </p>
+
+        <Footer />
       </div>
     </>
   );

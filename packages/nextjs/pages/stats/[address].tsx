@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { localhost } from "wagmi/chains";
+import { MetaHeader } from "~~/components/MetaHeader";
 import { PreviousMatchesList } from "~~/components/stats/PreviousMatchesList";
 import { StatsHeader } from "~~/components/stats/StatsHeader";
 import { useScaffoldContract, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
@@ -137,14 +138,11 @@ const Stats: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Scaffold-ETH 2 App</title>
-        <meta name="description" content="Created with 🏗 scaffold-eth-2" />
-      </Head>
+      <MetaHeader />
 
       <div className="flex flex-col pt-10 gap-4 w-full items-center justify-center">
         <StatsHeader address={address ? (address as string) : ""} matches={matches} />
-        <button onClick={write}>Create match</button>
+        {/* <button onClick={write}>Create match</button> */}
         {matches.length > 0 ? (
           <PreviousMatchesList address={address ? (address as string) : ""} matches={matches} />
         ) : (

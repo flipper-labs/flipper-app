@@ -1,52 +1,60 @@
-import { useEffect } from "react";
 import { socket } from "../../services/socket";
-import { ActionButton } from "../misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "../misc/buttons/ActionButton";
 import { StatusButton } from "../misc/buttons/StatusButton";
 import { MatchPreviewUser } from "./MatchPreviewUser";
 import { useAccount } from "wagmi";
+import { MatchStatus } from "~~/models/enums";
 import { Match } from "~~/models/match";
-import { NFT } from "~~/models/nfts";
 
 export interface MatchPreviewProps {
   match: Match;
+  player: string;
 }
 
-export const MatchPreview = ({ match }: MatchPreviewProps) => {
+export const MatchPreview = ({ match, player }: MatchPreviewProps) => {
   const { address } = useAccount();
 
-  function match_join() {
+  function joinMatch() {
     if (address) {
-      var join_payload = {
+      socket.emit("match:join", {
         matchID: match.id,
         opponent: {
           wallet: address,
           nfts: [],
         },
-      };
-      socket.emit("match:join", join_payload);
+      });
     } else {
       console.log("Wallet not linked!");
     }
   }
 
-  var action_button = <ActionButton action="Watch" color="#F050F2" />;
-  if (match.player2.wallet == "") {
-    action_button = <ActionButton action="Join" color="#46D05C" onClick={match_join} />;
-  } else if (match.player1.wallet === address) {
-    action_button = <></>;
+  function watchMatch() {
+    socket.emit("match:spectate", {
+      matchID: match.id,
+    });
   }
 
-  var player1Num = 0
-  match.player1.nfts?.forEach( (nft: any) => {
+  // TODO: Extract this somewhere else, probably to a service of some sorts
+  function inviteFriends() {}
+
+  var action_button = <ActionButton action={ActionType.Watch} color="#F050F2" onClick={watchMatch} />;
+  if (match.player1.wallet === address && match.player2.wallet === "") {
+    action_button = <ActionButton action={ActionType.InviteFriends} color="#F050F2" onClick={inviteFriends} />;
+  } else if (match.player1.wallet !== address && match.player2.wallet === "") {
+    action_button = <ActionButton action={ActionType.Join} color="#46D05C" onClick={joinMatch} />;
+  }
+
+  let player1Num = 0;
+  match.player1.nfts?.forEach((nft: any) => {
     if (!("selected" in nft) || nft.selected === true) {
-      player1Num += 1
+      player1Num += 1;
     }
   });
 
-  var player2Num = 0
-  match.player2.nfts?.forEach( (nft: any) => {
+  let player2Num = 0;
+  match.player2.nfts?.forEach((nft: any) => {
     if (!("selected" in nft) || nft.selected === true) {
-      player2Num += 1
+      player2Num += 1;
     }
   });
 
@@ -60,10 +68,8 @@ export const MatchPreview = ({ match }: MatchPreviewProps) => {
       <MatchPreviewUser address={match.player1.wallet} stake={player1Num} />
       <div className="text-lg">VS</div>
       <MatchPreviewUser address={match.player2.wallet} stake={player2Num} />
-      <StatusButton status="LIVE" color="#F050F2" />
-      {match.player1.wallet !== address
-        ? match.player2.wallet === "" && <ActionButton action="Join" color="#46D05C" onClick={match_join} />
-        : ""}
+      <StatusButton status={match.status ? match.status : MatchStatus.Live} winner={match.winner} player={player} />
+      {action_button}
     </div>
   );
 };

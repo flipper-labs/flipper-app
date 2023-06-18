@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import NextNProgress from "nextjs-progressbar";
@@ -8,6 +9,7 @@ import { useDarkMode } from "usehooks-ts";
 import { WagmiConfig } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
+import { MetaHeader } from "~~/components/MetaHeader";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
@@ -39,7 +41,7 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     const body = document.body;
     body.setAttribute("data-theme", "scaffoldEthDark");
-  }, [])
+  }, []);
 
   return (
     <WagmiConfig client={wagmiClient}>
@@ -49,13 +51,13 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
         avatar={BlockieAvatar}
         theme={isDarkTheme ? darkTheme() : lightTheme()}
       >
-        <div className="flex flex-col h-screen">
+        <MetaHeader />
+        <div className="flex flex-col h-screen bg-dark-flipper-gray">
           <Header />
-          <div className="background-div"></div>
+          {/* {<div className="background-div"></div>} */}
           <main className="relative flex flex-col flex-1">
             <Component {...pageProps} />
           </main>
-          <Footer />
         </div>
         <Toaster />
       </RainbowKitProvider>
