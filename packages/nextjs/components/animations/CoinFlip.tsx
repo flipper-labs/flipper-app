@@ -20,7 +20,7 @@ export const CoinFlip = (props: any) => {
     renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
     renderer.setClearColor(0x000000, 0);
     if (canvasRef.current) {
-        canvasRef.current.appendChild(renderer.domElement);
+      canvasRef.current.appendChild(renderer.domElement);
     }
 
     // Adding ambient lighting
@@ -42,7 +42,7 @@ export const CoinFlip = (props: any) => {
     pointLightTop.position.set(0, 3, 2);
     scene.add(pointLightTop);
 
-    THREE.ImageUtils.crossOrigin = "";
+    // THREE.ImageUtils.crossOrigin = "";
     const texture_front = new THREE.TextureLoader().load("/coin-front.svg");
     const texture_back = new THREE.TextureLoader().load("/coin-back.svg");
     const texture_side = new THREE.TextureLoader().load("/coin-side.svg");

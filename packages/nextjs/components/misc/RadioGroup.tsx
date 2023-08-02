@@ -2,7 +2,7 @@ import React from "react";
 
 export const RadioGroup = (props: any) => {
   const handleRadioChange = (event: any) => {
-    var currStatus = JSON.parse(JSON.stringify(props.filter));
+    const currStatus = JSON.parse(JSON.stringify(props.filter));
 
     for (let i = 0; i < currStatus.length; i++) {
       currStatus[i].checked = false;

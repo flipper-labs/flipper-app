@@ -11,7 +11,7 @@ import { MatchPreview } from "~~/components/start/MatchPreview";
 const Home: NextPage = () => {
   const { address } = useAccount();
   const router = useRouter();
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<any[]>([]);
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState([
     {
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        var queryData = {
+        const queryData: any = {
           player: nameFilter,
           status: [],
           nftNumber: [],

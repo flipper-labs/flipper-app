@@ -15,7 +15,7 @@ export const getPlayerStake = async (
   player: string,
   matchId: string,
 ): Promise<NFT[]> => {
-  let stakeResponse = await flipper.getPlayerStake(player, matchId);
+  const stakeResponse = await flipper.getPlayerStake(player, matchId);
 
   const stake = [] as NFT[];
   for (let i = 0; i < stakeResponse.length; i++) {

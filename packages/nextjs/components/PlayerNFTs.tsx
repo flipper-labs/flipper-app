@@ -10,10 +10,10 @@ export interface PlayerNFTsProps {
   coin_image: string;
   icon_align: string;
   player: string;
-  isLockedIn: boolean;
-  setIsLockedIn: any;
-  nfts: NFT[];
-  setNFTs: any;
+  isLockedIn?: boolean;
+  setIsLockedIn?: any;
+  nfts?: NFT[];
+  setNFTs?: any;
 }
 
 export const PlayerNFTs = ({
@@ -39,7 +39,7 @@ export const PlayerNFTs = ({
         {player === currentUser ? "You" : player === "" ? "Waiting for an opponent..." : shortenAddress(player)}
       </div>
       <div style={{ height: "40vh" }}>
-        <NFTGrid player={player} isLockedIn={isLockedIn} nfts={nfts} setNfts={setNFTs} />
+        <NFTGrid player={player} isLockedIn={isLockedIn ?? false} nfts={nfts ?? []} setNfts={setNFTs} />
       </div>
       {isLockedIn
         ? player === currentUser && (

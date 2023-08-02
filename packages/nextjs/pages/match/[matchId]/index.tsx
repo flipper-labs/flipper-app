@@ -2,20 +2,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { PlayerNFTs } from "../../../components/PlayerNFTs";
 import { httpServerURL, socket } from "./../../../services/socket";
-import { BigNumber, Contract, Signer, constants } from "ethers";
-import { useAccount, useSigner } from "wagmi";
+import { BigNumber, Contract, constants } from "ethers";
+import { useAccount } from "wagmi";
 import { Chat } from "~~/components/Chat";
 import { ActionButton, ActionType } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { Bargain, BargainResponse, Match } from "~~/models/match";
+import { BargainResponse, Match } from "~~/models/match";
 import { NFT, getUserNFTs } from "~~/models/nfts";
 import { notification } from "~~/utils/scaffold-eth";
 
 const MatchLobby = () => {
   const router = useRouter();
   const { matchId } = router.query;
-
-  const { data: signer } = useSigner();
 
   const { address: currentUser } = useAccount();
 
@@ -27,10 +25,6 @@ const MatchLobby = () => {
 
   const { data: nftContract } = useScaffoldContract({
     contractName: "MockERC721",
-  });
-  const { data: flipper } = useScaffoldContract({
-    contractName: "Flipper",
-    signerOrProvider: signer ? (signer as Signer) : undefined,
   });
 
   async function onJoin(payload: Match) {
@@ -135,9 +129,11 @@ const MatchLobby = () => {
         player1NFTs = await getUserNFTs(nftContract as Contract, match.player1.wallet);
         player1NFTs = player1NFTs.map((nft: NFT) => {
           const tokenFound = [];
+          const nfts: any = []
+          if(!match.player1.nfts) return nfts
           for (let i = 0; i < match.player1.nfts.length; i++) {
             const mnft = match.player1.nfts[i];
-            if (mnft && mnft.tokenId.hex === nft.tokenId._hex) {
+            if (mnft && mnft.tokenId === nft.tokenId) {
               tokenFound.push(mnft);
             }
           }
@@ -173,7 +169,7 @@ const MatchLobby = () => {
     router.push(`/match/${matchId}/roll`);
   };
 
-  const { writeAsync: createMatchAsync, isLoading } = useScaffoldContractWrite({
+  const { writeAsync: createMatchAsync } = useScaffoldContractWrite({
     contractName: "Flipper",
     functionName: "createMatch",
     args: [
@@ -202,7 +198,7 @@ const MatchLobby = () => {
       },
     ],
     value: "0",
-    onBlockConfirmation: async txnReceipt => {
+    onBlockConfirmation: async () => {
       socket.emit("match:moveToRoll", { from: currentUser, matchID: matchId });
     },
   });

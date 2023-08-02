@@ -8,7 +8,7 @@ export interface ChatProps {
 }
 
 export const Chat = ({ matchID, address }: ChatProps) => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const inputRef = useRef<any>(null);
@@ -31,7 +31,7 @@ export const Chat = ({ matchID, address }: ChatProps) => {
     }
   }, [messages]);
 
-  const handleInputChange = e => {
+  const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
   };
 

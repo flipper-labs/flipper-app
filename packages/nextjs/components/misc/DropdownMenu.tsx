@@ -33,7 +33,7 @@ export const DropdownMenu = (props: any) => {
           >
             <div className="px-1 py-1">
               <Menu.Item>
-                {({ active }) => (
+                {({ }) => (
                   <div className={`group w-full rounded-md px-2 py-2 text-sm text-white flex flex-col justify-start`}>
                     Status
                     <RadioGroup filter={props.statusFilter} setFilter={props.setStatusFilter} />
@@ -43,7 +43,7 @@ export const DropdownMenu = (props: any) => {
             </div>
             <div className="px-1 py-1">
               <Menu.Item>
-                {({ active }) => (
+                {({ }) => (
                   <div className={`group w-full rounded-md px-2 py-2 text-sm text-white flex flex-col justify-start`}>
                     Number of NFTs
                     <RadioGroup filter={props.nftNumberFilter} setFilter={props.setNftNumberFilter} />

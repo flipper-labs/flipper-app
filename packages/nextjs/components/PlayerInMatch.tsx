@@ -1,5 +1,4 @@
 import { NFTGrid } from "./NFTGrid";
-import { randomInt } from "crypto";
 import Jazzicon from "react-jazzicon/dist/Jazzicon";
 import { useAccount } from "wagmi";
 import { Player } from "~~/models/match";

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import LossIcon from "./../../public/svgs/loss.svg";
 import WinIcon from "./../../public/svgs/win.svg";
 import { Match } from "~~/models/match";
@@ -17,7 +16,7 @@ export const StatsHeader = ({ address, matches }: StatsHeaderProps) => {
 
   useEffect(() => {
     let wins = 0;
-    let losses = 0;
+    const losses = 0;
     let total = 0;
 
     matches.forEach(match => {

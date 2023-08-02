@@ -7,7 +7,7 @@ import { useAccount, useSigner } from "wagmi";
 import { Chat } from "~~/components/Chat";
 import { PlayerInMatch } from "~~/components/PlayerInMatch";
 import { CoinFlip } from "~~/components/animations/CoinFlip";
-import { ActionButton } from "~~/components/misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract, useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 import { Match, Player, StakePayload, matchFromLog } from "~~/models/match";
 import { socket } from "~~/services/socket";
@@ -48,11 +48,11 @@ const Roll = () => {
 
   useEffect(() => {
     socket.on("match:stake", onStake);
-    socket.on("match:start", onStart)
+    socket.on("match:start", onStart);
 
     return () => {
       socket.off("match:stake");
-      socket.off("match:start")
+      socket.off("match:start");
     };
   }, [match]);
 
@@ -126,7 +126,7 @@ const Roll = () => {
   useScaffoldEventSubscriber({
     contractName: "Flipper",
     eventName: "MatchCompleted",
-    listener: async (player1, player2, id) => {
+    listener: async () => {
       const finishedMatchRaw = await flipper?.matches(matchId);
       const convertedMatch = await matchFromLog(matchId as string, finishedMatchRaw, flipper, nftContract);
 
@@ -144,17 +144,16 @@ const Roll = () => {
     },
   });
 
-  const { writeAsync: startMatchAsync, isLoading } = useScaffoldContractWrite({
+  const { writeAsync: startMatchAsync } = useScaffoldContractWrite({
     contractName: "Flipper",
     functionName: "startMatch",
     args: [matchId as string],
     value: "0",
-    onBlockConfirmation: async txnReceipt => {},
   });
 
   const startMatch = async () => {
     try {
-      socket.emit("match:start", {matchID: match.id});
+      socket.emit("match:start", { matchID: match.id });
       await startMatchAsync();
     } catch (err: any) {
       notification.error(err.message);
@@ -169,7 +168,7 @@ const Roll = () => {
           {match && match.player1 && currentUser == match.player1.wallet && !player1Staked && (
             <ActionButton
               onClick={async () => await lockTokens(match.player1)}
-              action="Lock NFTs"
+              action={ActionType.Lock}
               color="white"
               iconToRight={false}
               background="#F050F2"
@@ -190,7 +189,7 @@ const Roll = () => {
           {match && match.player2 && currentUser == match.player2.wallet && !player2Staked && (
             <ActionButton
               onClick={async () => await lockTokens(match.player2)}
-              action="Lock NFTs"
+              action={ActionType.Lock}
               color="white"
               iconToRight={false}
               background="#F050F2"
@@ -207,7 +206,7 @@ const Roll = () => {
         {player1Staked && player2Staked && (
           <ActionButton
             onClick={async () => await startMatch()}
-            action="Start Match"
+            action={ActionType.CreateMatch}
             color="white"
             iconToRight={false}
             background="#F050F2"

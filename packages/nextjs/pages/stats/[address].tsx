@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
-import { localhost } from "wagmi/chains";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { PreviousMatchesList } from "~~/components/stats/PreviousMatchesList";
 import { StatsHeader } from "~~/components/stats/StatsHeader";
-import { useScaffoldContract, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 import { Match, matchFromLog } from "~~/models/match";
 import { mapAsyncParallel } from "~~/utils/flipper";
-import { getLocalProvider } from "~~/utils/scaffold-eth";
 
 const Stats: NextPage = () => {
   const [matches, setMatches] = useState([] as Match[]);
@@ -18,37 +14,12 @@ const Stats: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
 
-  const provider = getLocalProvider(localhost);
-
   const { data: flipper } = useScaffoldContract({
     contractName: "Flipper",
   });
 
-  const newMatch = {
-    timestamp: BigNumber.from(0),
-    player1: "0x69ddB6f5Bd2d92C397Db173b98FF6dEEF204A3bB",
-    player1Stake: [{ contractAddress: "0x0165878A594ca255338adfa4d48449f69242Eb8F", id: BigNumber.from(1) }],
-    player2: "0x68a87aecafa6bc424A8083FF0bE90d20Eb97a015",
-    player2Stake: [{ contractAddress: "0x0165878A594ca255338adfa4d48449f69242Eb8F", id: BigNumber.from(0) }],
-    gamemode: "wta",
-    winner: ethers.constants.AddressZero,
-    isSettled: false,
-  };
-
-  const { writeAsync, isLoading } = useScaffoldContractWrite({
-    contractName: "Flipper",
-    functionName: "createMatch",
-    args: ["123", newMatch],
-    value: "0",
-    onBlockConfirmation: txnReceipt => {
-      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
-    },
-  });
-
   const {
     data: matchCompletedEventsAsPlayer1,
-    isLoading: isLoadingCompletedEventsAsPlayer1,
-    error: errorReadingCompletedEventsAsPlayer1,
   } = useScaffoldEventHistory({
     contractName: "Flipper",
     eventName: "MatchCompleted",
@@ -61,8 +32,6 @@ const Stats: NextPage = () => {
 
   const {
     data: matchCompletedEventsAsPlayer2,
-    isLoading: isLoadingCompletedEventsAsPlayer2,
-    error: errorReadingCompletedEventsAsPlayer2,
   } = useScaffoldEventHistory({
     contractName: "Flipper",
     eventName: "MatchCompleted",
@@ -75,8 +44,6 @@ const Stats: NextPage = () => {
 
   const {
     data: matchCreatedEventsAsPlayer1,
-    isLoading: isLoadingCreatedEventsAsPlayer1,
-    error: errorReadingCreatedEventsAsPlayer1,
   } = useScaffoldEventHistory({
     contractName: "Flipper",
     eventName: "MatchCreated",
@@ -89,8 +56,6 @@ const Stats: NextPage = () => {
 
   const {
     data: matchCreatedEventsAsPlayer2,
-    isLoading: isLoadingCreatedEventsAsPlayer2,
-    error: errorReadingCreatedEventsAsPlayer2,
   } = useScaffoldEventHistory({
     contractName: "Flipper",
     eventName: "MatchCreated",
@@ -119,7 +84,7 @@ const Stats: NextPage = () => {
     (async () => {
       let matches = (await mapAsyncParallel(matchIds, async (id: any) => {
         const match = await flipper?.matches(id);
-        return await matchFromLog(id, match, flipper, provider);
+        return await matchFromLog(id, match, flipper, null);
       })) as Match[];
       matches = matches.sort((a: Match, b: Match) => {
         return a.timestamp - b.timestamp;
@@ -133,8 +98,6 @@ const Stats: NextPage = () => {
     matchCreatedEventsAsPlayer1,
     matchCreatedEventsAsPlayer2,
   ]);
-
-  const write = async () => await writeAsync();
 
   return (
     <>

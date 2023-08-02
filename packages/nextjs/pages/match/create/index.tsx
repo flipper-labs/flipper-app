@@ -4,7 +4,7 @@ import { socket } from "../../../services/socket";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { NFTGrid } from "~~/components/NFTGrid";
-import { ActionButton } from "~~/components/misc/buttons/ActionButton";
+import { ActionButton, ActionType } from "~~/components/misc/buttons/ActionButton";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { NFT, getUserNFTs } from "~~/models/nfts";
 
@@ -66,7 +66,7 @@ const CreateMatch: NextPage = () => {
         <NFTGrid nfts={nfts} setNfts={setNfts} player={address ? address : ""} isLockedIn={false} />
         <div className="mt-3">
           <ActionButton
-            action="Create Match"
+            action={ActionType.CreateMatch}
             color="white"
             iconToRight={false}
             background="#F050F2"

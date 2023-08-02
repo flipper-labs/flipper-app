@@ -35,9 +35,9 @@ export const MatchPreview = ({ match, player }: MatchPreviewProps) => {
   }
 
   // TODO: Extract this somewhere else, probably to a service of some sorts
-  function inviteFriends() {}
+  function inviteFriends() {console.log("test")}
 
-  var action_button = <ActionButton action={ActionType.Watch} color="#F050F2" onClick={watchMatch} />;
+  let action_button = <ActionButton action={ActionType.Watch} color="#F050F2" onClick={watchMatch} />;
   if (match.player1.wallet === address && match.player2.wallet === "") {
     action_button = <ActionButton action={ActionType.InviteFriends} color="#F050F2" onClick={inviteFriends} />;
   } else if (match.player1.wallet !== address && match.player2.wallet === "") {

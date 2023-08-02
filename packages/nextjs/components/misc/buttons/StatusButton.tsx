@@ -32,7 +32,7 @@ export const convertStatus = (status: MatchStatus, player: string, winner: strin
 };
 
 export const StatusButton = ({ status, player, winner }: StatusButtonProps) => {
-  let convertedStatus = convertStatus(status, player, winner);
+  const convertedStatus = convertStatus(status, player, winner);
   let color = "";
 
   console.log(status);

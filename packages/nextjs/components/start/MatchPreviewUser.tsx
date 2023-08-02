@@ -1,4 +1,3 @@
-import { randomInt } from "crypto";
 import Jazzicon from "react-jazzicon/dist/Jazzicon";
 import { useAccount } from "wagmi";
 import { shortenAddress } from "~~/utils/flipper";

@@ -15,6 +15,7 @@ export enum ActionType {
   Watch = "Watch",
   Lock = "Lock",
   Unlock = "Unlock",
+  GoToHomePage = "Go To Home Page"
 }
 
 interface ActionButtonProps {

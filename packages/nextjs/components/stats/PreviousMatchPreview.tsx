@@ -9,8 +9,6 @@ export interface MatchPreviewProps {
 }
 
 export const PreviousMatchPreview = ({ match, player }: MatchPreviewProps) => {
-  const isWinner = match.winner === player;
-
   return (
     <div
       className={`box-border w-4/5 py-4 px-8 gap-18 
