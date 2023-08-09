@@ -1,0 +1,13 @@
+version: "3.2"
+
+services:
+  frontend:
+    image: flipper-front
+    ports:
+    - "3000:3000"
+
+  server:
+    image: flipper-server
+    ports:
+    - "3002:3002"
+

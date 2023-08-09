@@ -14,7 +14,7 @@
 # EXPOSE 3000
 # # Start the React app
 # CMD ["npm", "start"]
-FROM node:18-alpine AS base
+FROM --platform=linux/amd64 node:18-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps

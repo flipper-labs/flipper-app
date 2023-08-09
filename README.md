@@ -47,3 +47,8 @@ Our team comprises of three full stack engineers and an UI/UX designer.
 - [🎨 Figma Designs](https://www.figma.com/file/03gkLgB551o6NwxPEEXJrd/NFT-Flipper?type=design&t=dGJdy6yMjNdHIVLe-6)
 - [🌐 TAIKAI Project Page](https://taikai.network/ethbelgrade/hackathons/hackathon-2023/projects/cliinujot00g9wn011g01mj7s/idea)
 - [🏗️ Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2) and their amazing project template.
+
+## Deployments
+### Mumbai
+- flipper: 0x6C1c321134E21bA5A63282B44A34b54ceD67672D
+- Erc721: 0x5EED205dA26B814827a852033C12B373DcA39bB3

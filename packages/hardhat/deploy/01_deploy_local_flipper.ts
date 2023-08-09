@@ -35,6 +35,9 @@ const deployFlipper: DeployFunction = async function (hre: HardhatRuntimeEnviron
     autoMine: true,
   });
 
+  console.log("Flipper contract: ", flipper.address)
+  console.log("Erc721 collection: ", erc721collection.address)
+
   await execute(
     "MockERC721",
     { from: deployer, log: true, autoMine: true },
